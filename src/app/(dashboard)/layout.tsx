@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DashboardNav } from '@/components/dashboard/nav'
+import { OnboardingSync } from '@/components/dashboard/onboarding-sync'
 import type { Profile } from '@/types'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -22,6 +23,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className={isSimplified ? 'simplified-mode' : ''}>
+      <OnboardingSync />
       <DashboardNav profile={profile as Profile} email={user.email || ''} />
       <main className="max-w-5xl mx-auto px-4 py-8">
         <Suspense>{children}</Suspense>

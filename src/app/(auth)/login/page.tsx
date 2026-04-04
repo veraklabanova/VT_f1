@@ -89,7 +89,7 @@ export default function LoginPage() {
           <div className="text-sm text-center space-y-2">
             <p className="text-muted-foreground">
               Nemáte účet?{' '}
-              <Link href="/" className="text-primary hover:underline">
+              <Link href="/register" className="text-primary hover:underline">
                 Zaregistrujte se
               </Link>
             </p>

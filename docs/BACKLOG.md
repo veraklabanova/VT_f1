@@ -166,3 +166,50 @@ Tento dokument eviduje změny oproti původní projektové dokumentaci (PAB_Vlas
 ### Riziko
 
 - V produkci je nutné mít platné Supabase klíče — demo mód je pouze pro vývoj/testování
+
+---
+
+## BL-006: Dva nezávislé registrační flow + přenos dat z onboardingu
+
+**Datum:** 2026-04-04
+**Priorita:** P0 (kritická UX změna)
+**Stav:** Implementováno
+
+### Popis změny
+
+**Původní stav (BL-001):**
+- Jediná cesta k registraci vede přes onboarding wizard (role → dotazník → téma → stažení → registrace)
+- Přímá registrace přes tlačítko "Přihlásit se" na landing page vede na login, odkud "Zaregistrujte se" vede zpět na landing page
+- Po registraci přes onboarding se data z dotazníku nepřenesou do profilu — uživatel vidí "Vyplňte dotazník" znovu
+
+**Nový stav — dva paralelní flow:**
+
+**Flow A: Přímá registrace (tlačítko "Přihlásit se" → "Zaregistrujte se")**
+- Login stránka: odkaz "Zaregistrujte se" vede na `/register` (ne zpět na landing)
+- Na `/register` uživatel vybere roli a vyplní registrační formulář
+- Po registraci → dashboard → dotazník → téma → sešit (standardní flow)
+
+**Flow B: Onboarding first (tlačítka "Začít" na landing page)**
+- Uživatel projde onboarding wizard bez registrace (role → dotazník → téma → stažení)
+- Data se ukládají do `localStorage`
+- Po stažení prvního sešitu je nabídnuta registrace
+- Při registraci se data z localStorage (role, odpovědi dotazníku, severity) automaticky přenesou do profilu v DB
+- Uživatel po přihlášení vidí dashboard s již vyplněnou úrovní obtížnosti
+
+### Dopad na dokumentaci
+
+**Ovlivněné sekce PAB:**
+- User Journey — existují 2 paralelní vstupní body (přímá registrace vs. onboarding first)
+- Registrační stránka — musí podporovat výběr role bez URL parametru
+
+**Ovlivněné UAT testy:**
+- UAT-01 (Registrace) — testovat oba flow
+- Nový test: po onboarding registraci je severity level již vyplněn
+
+### Technická implementace
+
+- Registrační stránka `/register` — přidán výběr role pokud není v URL parametru
+- Login stránka — odkaz "Zaregistrujte se" vede na `/register`
+- Registrační stránka — po úspěšné registraci čte `localStorage` klíč `vt_onboarding` a přenáší assessment data do DB
+- Onboarding wizard — ukládá kompletní data (role, answers, severity) do `localStorage`
+- Auth callback — po ověření emailu přenese data z localStorage do profilu
