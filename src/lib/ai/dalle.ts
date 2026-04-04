@@ -1,11 +1,16 @@
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-})
+let openai: OpenAI | null = null
+
+function getClient() {
+  if (!openai) {
+    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! })
+  }
+  return openai
+}
 
 export async function generateExerciseImage(prompt: string): Promise<string> {
-  const response = await openai.images.generate({
+  const response = await getClient().images.generate({
     model: 'dall-e-3',
     prompt,
     n: 1,
