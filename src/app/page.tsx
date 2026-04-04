@@ -33,16 +33,16 @@ export default function Home() {
 
       {/* Hero */}
       <main className="flex-1">
-        <section className="py-16 px-4 bg-gradient-to-b from-white to-gray-50">
+        <section className="py-16 px-4 bg-gradient-to-b from-background to-secondary/50">
           <div className="max-w-5xl mx-auto text-center">
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-4">
-              Kognitivní trénink
-              <span className="text-primary block mt-1">vlastním tempem</span>
+              Trénujte paměť a myšlení.
+              <span className="text-primary block mt-1">V klidu a vlastním tempem.</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-              Strukturované pracovní sešity pro osoby s kognitivním postižením
-              a jejich pečující. Profesionálně navržené, přizpůsobené
-              individuální úrovni.
+              Připravili jsme pro vás pracovní sešity, které pomáhají udržovat
+              mysl v kondici. Jsou sestavené odborníky a přizpůsobí se přesně tomu,
+              co vy nebo vaši blízcí právě teď zvládnete.
             </p>
           </div>
         </section>
@@ -56,30 +56,30 @@ export default function Home() {
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-primary font-bold text-lg">1</span>
                 </div>
-                <h3 className="font-semibold mb-2">Vyplňte dotazník</h3>
+                <h3 className="font-semibold mb-2">Odpovíte na pár otázek</h3>
                 <p className="text-sm text-muted-foreground">
-                  Krátký dotazník pomůže určit správnou úroveň obtížnosti
-                  materiálů.
+                  Zjistíme, jaká obtížnost pro vás bude ta pravá,
+                  aby vás cvičení opravdu bavilo.
                 </p>
               </div>
               <div className="text-center p-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-primary font-bold text-lg">2</span>
                 </div>
-                <h3 className="font-semibold mb-2">Vyberte téma</h3>
+                <h3 className="font-semibold mb-2">Vyberete si téma</h3>
                 <p className="text-sm text-muted-foreground">
-                  Zvolte si téma, které je blízké — rodina, zahrada, domácnost
-                  a další.
+                  Zahrada, rodina nebo třeba tradice? Zvolte si to,
+                  co je vašemu srdci nejbližší.
                 </p>
               </div>
               <div className="text-center p-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-primary font-bold text-lg">3</span>
                 </div>
-                <h3 className="font-semibold mb-2">Stáhněte sešit</h3>
+                <h3 className="font-semibold mb-2">Vytisknete si sešit</h3>
                 <p className="text-sm text-muted-foreground">
-                  Stáhněte si pracovní sešit ve formátu PDF — připravený
-                  k vytištění.
+                  Hned si stáhnete PDF dokument, který si snadno
+                  vytisknete doma. První je na nás.
                 </p>
               </div>
             </div>
@@ -87,7 +87,7 @@ export default function Home() {
         </section>
 
         {/* Registration paths */}
-        <section className="py-12 px-4 bg-gray-50">
+        <section className="py-12 px-4 bg-secondary/50">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-2xl font-bold text-center mb-2">Začněte zdarma</h2>
             <p className="text-center text-muted-foreground mb-8">
@@ -101,9 +101,9 @@ export default function Home() {
                   <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
                     <Heart className="h-7 w-7 text-blue-600" />
                   </div>
-                  <CardTitle className="text-lg">Mám potíže s pamětí</CardTitle>
+                  <CardTitle className="text-lg">Chci trénovat svou paměť</CardTitle>
                   <CardDescription>
-                    Chci trénovat paměť a další schopnosti
+                    Hledám cvičení pro sebe, abych se udržel/a v kondici.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
@@ -121,9 +121,9 @@ export default function Home() {
                   <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
                     <Users className="h-7 w-7 text-green-600" />
                   </div>
-                  <CardTitle className="text-lg">Starám se o blízkého</CardTitle>
+                  <CardTitle className="text-lg">Hledám sešit pro někoho blízkého</CardTitle>
                   <CardDescription>
-                    Hledám materiály pro pečovanou osobu
+                    Chci pomoci s tréninkem paměti někomu v rodině.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
@@ -141,9 +141,9 @@ export default function Home() {
                   <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
                     <Building2 className="h-7 w-7 text-purple-600" />
                   </div>
-                  <CardTitle className="text-lg">Jsme organizace</CardTitle>
+                  <CardTitle className="text-lg">Hledáme materiály pro naše klienty</CardTitle>
                   <CardDescription>
-                    Domov pro seniory, rehabilitační centrum aj.
+                    Pro domovy seniorů a centra.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
@@ -165,10 +165,10 @@ export default function Home() {
               <div className="flex gap-4">
                 <BookOpen className="h-6 w-6 text-primary shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-semibold mb-1">Odborně navržené cvičení</h3>
+                  <h3 className="font-semibold mb-1">Sestavené odborníky</h3>
                   <p className="text-sm text-muted-foreground">
-                    Cvičení jsou navržena s ohledem na kognitivní funkce —
-                    paměť, pozornost, orientaci, jazyk a logické myšlení.
+                    Cvičení cílí na paměť, pozornost, orientaci
+                    a logické myšlení — přesně tam, kde je potřeba.
                   </p>
                 </div>
               </div>

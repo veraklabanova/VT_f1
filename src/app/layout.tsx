@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Nunito, Geist_Mono } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const nunito = Nunito({
+  variable: '--font-nunito',
   subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500', '600', '700', '800'],
 })
 
 const geistMono = Geist_Mono({
@@ -24,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="cs" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="cs" className={`${nunito.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
         <Toaster />

@@ -257,3 +257,109 @@ V admin rozhraní chybí tlačítko pro odhlášení. Uživatel musí nejdřív 
 ### Poznámka
 
 Dashboard stránka `/themes` již správně filtruje témata dle I8. Problém je pouze v onboarding wizardu, který používá hardcoded mock témata.
+
+---
+
+## BL-009: UX/UI Redesign — Přístupnost (A11y)
+
+**Datum:** 2026-04-04
+**Priorita:** P1
+**Stav:** Implementováno
+
+### Popis změny
+
+Kompletní redesign zaměřený na přístupnost pro cílovou skupinu (osoby s kognitivním postižením a jejich pečující).
+
+**Typografie a témata:**
+- Odstraněno patkové písmo z nadpisů, nahrazeno fontem Nunito (zaoblený, přátelský Sans-Serif)
+- Při výběru role "Mám potíže s pamětí" se aktivuje třída `.a11y-theme` — zvětší font o 2–4px a zvýší kontrast
+
+**Formulář (dotazník):**
+- Radio buttony předělány na klikatelné bloky/karty — kliknutí kamkoliv na text/rámeček vybere odpověď
+- Aktivní stav: 2px modrý rámeček + světle modré pozadí + tučný text
+- Progress bar s vizuálním ukazatelem (Krok X z Y)
+- Tlačítko Zpět zvětšeno na zřetelné tlačítko s obrysem
+
+**Karty témat:**
+- Deaktivované karty: opacity 0.4, odstraněna falešná tlačítka
+- Obtížnost předělána na výrazný informační banner se zeleným podbarvením a ikonou
+
+**Stažení a závěr:**
+- Štítek "Zdarma" změněn na světle zelený textový tag (nekonkuruje CTA)
+- Tlačítko "Stáhnout sešit" zvětšeno s ikonou
+- Přidán fallback odkaz pro blokaci vyskakovacích oken
+- Text u registrace přepsán na benefitní: "Vytvořit účet a odemknout další témata"
+
+### Dopad na dokumentaci
+- PAB: aktualizace sekce UI/UX, simplified mode, a11y-theme
+- UAT: aktualizace vizuálních testů
+
+---
+
+## BL-010: UX/UI Redesign — Zateplení a emocionální design
+
+**Datum:** 2026-04-04
+**Priorita:** P1
+**Stav:** Implementováno
+
+### Popis změny
+
+Odstranění sterilního "úřednického" dojmu. Vytvoření bezpečného, uklidňujícího prostředí.
+
+**Barevná paleta:**
+- Pozadí z #FFFFFF na teplou lomenou bílou (#FEFDFB)
+- Hlavní texty z čisté černé na antracitovou (#2C2A29)
+- Primární barva: šalvějová zelená (#5BA48A) pro tlačítka a ikony
+
+**Měkká geometrie:**
+- Karty: border-radius 16px
+- Tlačítka: border-radius 999px (pilulky)
+
+**Stíny:**
+- Zrušeny tvrdé rámečky, nahrazeny jemným rozptýleným stínem
+- box-shadow: 0 10px 25px rgba(0,0,0,0.05)
+
+**Font:**
+- Nunito (zaoblený, přátelský) z Google Fonts jako hlavní font
+
+### Dopad na dokumentaci
+- PAB: aktualizace vizuálního designu, barevné palety, typografie
+- UAT: aktualizace vizuálních testů
+
+---
+
+## BL-011: UX Copywriting — Empatický tone of voice
+
+**Datum:** 2026-04-04
+**Priorita:** P0
+**Stav:** Implementováno
+
+### Popis změny
+
+Kompletní přepis textů z klinického/hodnotícího tónu na roli "přátelského průvodce". Odstranění odborného žargonu, povzbuzení uživatele.
+
+**Úvodní obrazovka:**
+- H1: "Kognitivní trénink vlastním tempem" → "Trénujte paměť a myšlení. V klidu a vlastním tempem."
+- Podnadpis přepsán na empatický tón bez termínu "kognitivní postižení"
+- Kroky "Jak to funguje" přepsány na přátelský jazyk
+- Karty: "Mám potíže s pamětí" → "Chci trénovat svou paměť", "Starám se o blízkého" → "Hledám sešit pro někoho blízkého"
+
+**Dotazník:**
+- Nadpis: "Krátký dotazník" → "Pojďme zjistit, co vám bude nejlépe vyhovovat"
+- Podnadpis: uklidňující text ("Nemusíte se ničeho obávat...")
+- Otázky přeformulovány jako běžný rozhovor, ne lékařský test
+- Odpovědi zlidštěny
+
+**Výběr tématu:**
+- Nadpis: "Vyberte téma" → "O čem si chcete číst a přemýšlet?"
+- Banner obtížnosti: "Určená obtížnost: Střední" → "Výborně, máme to! Podle vašich odpovědí..."
+
+**Stažení a závěr:**
+- Před stažením: "Váš sešit je připraven" → "Skvělé, váš sešit je připraven!"
+- Tlačítko: "Stáhnout sešit zdarma" → "Stáhnout můj první sešit (zdarma)"
+- Po stažení: "Sešit byl stažen!" → "Sešit se stahuje k vám do počítače."
+- Registrace: "Vytvořit účet pro další sešity" → "Uložit výsledek a vytvořit bezplatný účet"
+
+### Dopad na dokumentaci
+- PAB: aktualizace textací UI, tone of voice
+- UAT: aktualizace textových kontrol v testech

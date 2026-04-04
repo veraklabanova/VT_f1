@@ -18,22 +18,22 @@ const TOTAL_STEPS_ORG = 3 // role → theme → download
 const roleOptions = [
   {
     value: 'osoba_s_postizenim' as UserRole,
-    label: 'Mám potíže s pamětí',
-    description: 'Chci trénovat paměť a další schopnosti',
+    label: 'Chci trénovat svou paměť',
+    description: 'Hledám cvičení pro sebe, abych se udržel/a v kondici.',
     icon: Heart,
     color: 'bg-blue-100 text-blue-600',
   },
   {
     value: 'pecujici' as UserRole,
-    label: 'Starám se o blízkého',
-    description: 'Hledám materiály pro pečovanou osobu',
+    label: 'Hledám sešit pro někoho blízkého',
+    description: 'Chci pomoci s tréninkem paměti někomu v rodině.',
     icon: Users,
     color: 'bg-green-100 text-green-600',
   },
   {
     value: 'organizace' as UserRole,
-    label: 'Jsme organizace',
-    description: 'Domov pro seniory, rehabilitační centrum aj.',
+    label: 'Hledáme materiály pro naše klienty',
+    description: 'Pro domovy seniorů a centra.',
     icon: Building2,
     color: 'bg-purple-100 text-purple-600',
   },
@@ -186,7 +186,7 @@ export default function OnboardingPage() {
   const stepProgress = Math.round(((step + 1) / totalSteps) * 100)
 
   return (
-    <div className={`min-h-screen bg-gray-50 ${isFirstPerson ? 'simplified-mode' : ''}`}>
+    <div className={`min-h-screen bg-background ${isFirstPerson ? 'simplified-mode a11y-theme' : ''}`}>
       {/* Header */}
       <header className="border-b bg-white px-4 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
@@ -195,9 +195,9 @@ export default function OnboardingPage() {
             <span className="font-bold">Vlastním tempem</span>
           </Link>
           {step > 0 && (
-            <span className="text-sm text-muted-foreground">
+            <Badge variant="secondary" className="text-sm px-3 py-1">
               Krok {step + 1} z {totalSteps}
-            </span>
+            </Badge>
           )}
         </div>
       </header>
@@ -251,14 +251,14 @@ export default function OnboardingPage() {
         {stepName === 'assessment' && (
           <div className="space-y-6 max-w-2xl mx-auto">
             <div>
-              <Button variant="ghost" size="sm" onClick={() => setStep(0)} className="gap-1 mb-2">
-                <ArrowLeft className="h-4 w-4" /> Zpět
+              <Button variant="outline" size="default" onClick={() => setStep(0)} className="gap-2 mb-4">
+                <ArrowLeft className="h-4 w-4" /> Zpět na výběr role
               </Button>
-              <h1 className="text-3xl font-bold">Krátký dotazník</h1>
+              <h1 className="text-3xl font-bold">Pojďme zjistit, co vám bude nejlépe vyhovovat</h1>
               <p className="text-muted-foreground mt-1">
                 {isFirstPerson
-                  ? 'Odpovězte na několik otázek o vašich každodenních schopnostech. Pomůže to určit správnou obtížnost.'
-                  : 'Odpovězte na několik otázek o schopnostech pečované osoby.'}
+                  ? 'Nemusíte se ničeho obávat. Tyto otázky nám jen napoví, jakou úroveň sešitu pro vás máme připravit, aby pro vás cvičení nebylo příliš těžké, ani příliš lehké.'
+                  : 'Tyto otázky nám napoví, jakou úroveň sešitu připravit, aby cvičení nebylo příliš těžké, ani příliš lehké.'}
               </p>
             </div>
 
@@ -270,14 +270,14 @@ export default function OnboardingPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {question.options.map((option) => (
                       <label
                         key={option.value}
-                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors
+                        className={`flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all
                           ${answers[question.id] === option.value
-                            ? 'border-primary bg-primary/5'
-                            : 'hover:bg-gray-50'}`}
+                            ? 'border-primary bg-primary/10 shadow-md'
+                            : 'border-transparent bg-white hover:bg-gray-50 shadow-sm'}`}
                       >
                         <input
                           type="radio"
@@ -287,13 +287,13 @@ export default function OnboardingPage() {
                           onChange={() => setAnswers((prev) => ({ ...prev, [question.id]: option.value }))}
                           className="sr-only"
                         />
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0
-                          ${answers[question.id] === option.value ? 'border-primary' : 'border-gray-300'}`}>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0
+                          ${answers[question.id] === option.value ? 'border-primary bg-primary' : 'border-gray-300'}`}>
                           {answers[question.id] === option.value && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                            <CheckCircle className="h-4 w-4 text-white" />
                           )}
                         </div>
-                        <span className="text-sm">
+                        <span className={`text-base ${answers[question.id] === option.value ? 'font-semibold' : ''}`}>
                           {isFirstPerson ? option.label_first_person : option.label_third_person}
                         </span>
                       </label>
@@ -326,17 +326,20 @@ export default function OnboardingPage() {
         {stepName === 'theme' && (
           <div className="space-y-6">
             <div>
-              <Button variant="ghost" size="sm" onClick={() => setStep(step - 1)} className="gap-1 mb-2">
+              <Button variant="outline" size="default" onClick={() => setStep(step - 1)} className="gap-2 mb-4">
                 <ArrowLeft className="h-4 w-4" /> Zpět
               </Button>
-              <h1 className="text-3xl font-bold">Vyberte téma</h1>
+              <h1 className="text-3xl font-bold">O čem si chcete číst a přemýšlet?</h1>
               <p className="text-muted-foreground mt-1">
-                Zvolte si téma, které je vám blízké.
+                Vyberte si téma, které vás baví.
               </p>
               {severity && (
-                <Badge variant="secondary" className="mt-2">
-                  Určená obtížnost: {severityLabels[severity]}
-                </Badge>
+                <div className="mt-3 flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+                  <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
+                  <span className="text-green-800 font-medium">
+                    Výborně, máme to! Podle vašich odpovědí vám bude nejlépe vyhovovat obtížnost „{severityLabels[severity]}". Teď už si jen vyberte téma.
+                  </span>
+                </div>
               )}
             </div>
 
@@ -347,8 +350,9 @@ export default function OnboardingPage() {
                   <Card
                     key={theme.id}
                     className={available
-                      ? 'cursor-pointer hover:shadow-lg transition-shadow border-primary/30'
-                      : 'opacity-50'}
+                      ? 'cursor-pointer hover:shadow-lg transition-all border-2 border-primary/20 hover:border-primary/50'
+                      : 'opacity-40 pointer-events-none'}
+                    onClick={available ? () => handleThemeSelect(theme.id) : undefined}
                   >
                     <CardHeader>
                       <CardTitle>{theme.name}</CardTitle>
@@ -356,13 +360,11 @@ export default function OnboardingPage() {
                     </CardHeader>
                     <CardContent>
                       {available ? (
-                        <Button className="w-full gap-2" onClick={() => handleThemeSelect(theme.id)}>
+                        <Button className="w-full gap-2">
                           Vybrat <ArrowRight className="h-4 w-4" />
                         </Button>
                       ) : (
-                        <Badge variant="secondary" className="w-full justify-center py-2">
-                          Připravujeme
-                        </Badge>
+                        <span className="text-sm text-muted-foreground italic">Připravujeme</span>
                       )}
                     </CardContent>
                   </Card>
@@ -378,11 +380,11 @@ export default function OnboardingPage() {
             {!downloaded ? (
               <>
                 <div>
-                  <h1 className="text-3xl font-bold">Váš sešit je připraven</h1>
+                  <h1 className="text-3xl font-bold">Skvělé, váš sešit je připraven!</h1>
                   <p className="text-muted-foreground mt-2">
                     {isOrg
                       ? 'Vygenerujeme 3 pracovní sešity (lehká, střední, těžší obtížnost).'
-                      : `Pracovní sešit na obtížnosti "${severity ? severityLabels[severity] : ''}" je připraven ke stažení.`}
+                      : `Pracovní sešit na obtížnosti „${severity ? severityLabels[severity] : ''}" je připraven ke stažení.`}
                   </p>
                 </div>
 
@@ -395,18 +397,20 @@ export default function OnboardingPage() {
                         <p>Formát: PDF, 12 stran, 10 cvičení</p>
                       </div>
 
-                      <Badge className="text-lg px-4 py-1">Zdarma</Badge>
+                      <span className="inline-block text-green-700 bg-green-100 text-sm font-medium px-3 py-1 rounded-full">
+                        Zdarma
+                      </span>
 
                       <Button
                         onClick={handleGenerate}
                         disabled={generating}
                         size="lg"
-                        className="w-full gap-2"
+                        className="w-full gap-2 text-lg py-6"
                       >
                         {generating ? (
-                          <><Loader2 className="h-5 w-5 animate-spin" /> Generuji sešit...</>
+                          <><Loader2 className="h-6 w-6 animate-spin" /> Generuji sešit...</>
                         ) : (
-                          <><Download className="h-5 w-5" /> Stáhnout sešit zdarma</>
+                          <><Download className="h-6 w-6" /> Stáhnout můj první sešit (zdarma)</>
                         )}
                       </Button>
                       {error && (
@@ -414,6 +418,9 @@ export default function OnboardingPage() {
                           <AlertDescription>{error}</AlertDescription>
                         </Alert>
                       )}
+                      <p className="text-xs text-muted-foreground">
+                        Pokud stahování nezačalo, <button onClick={handleGenerate} className="underline text-primary">klikněte zde</button>.
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -424,15 +431,16 @@ export default function OnboardingPage() {
                   <CheckCircle className="h-10 w-10 text-green-600" />
                 </div>
 
-                <h1 className="text-3xl font-bold">Sešit byl stažen!</h1>
+                <h1 className="text-3xl font-bold">Sešit se stahuje k vám do počítače.</h1>
                 <p className="text-muted-foreground">
-                  Váš první pracovní sešit je zdarma. Pro další sešity si vytvořte účet.
+                  Můžete si ho rovnou vytisknout a v klidu se pustit do cvičení.
+                  Líbí se vám náš přístup? Uložte si dnešní výsledek a získejte přístup k dalším krásným tématům.
                 </p>
 
                 <div className="space-y-3">
                   <Link href={`/register?type=${role}`}>
-                    <Button size="lg" className="w-full gap-2">
-                      Vytvořit účet pro další sešity <ArrowRight className="h-4 w-4" />
+                    <Button size="lg" className="w-full gap-2 text-lg py-6">
+                      Uložit výsledek a vytvořit bezplatný účet <ArrowRight className="h-5 w-5" />
                     </Button>
                   </Link>
                   <Link href="/">
@@ -442,8 +450,8 @@ export default function OnboardingPage() {
                   </Link>
                 </div>
 
-                <p className="text-xs text-muted-foreground">
-                  Registrací získáte přístup k historii sešitů a dalším tématům.
+                <p className="text-sm text-muted-foreground">
+                  S účtem získáte historii sešitů, přístup ke všem tématům a možnost generovat neomezené množství materiálů.
                 </p>
               </>
             )}
