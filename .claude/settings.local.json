@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:ak-legal-ai.verklab.cz)",
+      "Bash(gh repo:*)"
+    ]
+  }
+}
