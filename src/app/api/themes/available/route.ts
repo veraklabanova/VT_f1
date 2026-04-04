@@ -1,30 +1,36 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function GET(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // Try to get user context for org-specific filtering
+  let isOrg = false
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      isOrg = profile?.role === 'organizace'
+    }
+  } catch {
+    // Not authenticated — fine for onboarding flow
+  }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
+  // Use admin client to read themes and exercises (bypasses RLS)
+  const adminSupabase = createAdminClient()
 
-  const isOrg = profile?.role === 'organizace'
-  const difficulties = isOrg ? ['lehka', 'stredni', 'tezsi'] : null
-
-  // Get all themes
-  const { data: themes } = await supabase
+  const { data: themes } = await adminSupabase
     .from('themes')
     .select('*')
     .order('name')
 
   if (!themes) return NextResponse.json({ themes: [] })
 
-  // Get exercise counts per theme per difficulty
-  const { data: exercises } = await supabase
+  const { data: exercises } = await adminSupabase
     .from('exercises')
     .select('id, theme_id, difficulty, exercise_tags(tag_id)')
     .eq('status', 'approved')
@@ -33,7 +39,9 @@ export async function GET(request: Request) {
 
   for (const theme of themes) {
     const themeExercises = exercises?.filter((e) => e.theme_id === theme.id) || []
-    const difficultiesToCheck = difficulties || ['lehka', 'stredni', 'tezsi']
+    const difficultiesToCheck = isOrg
+      ? ['lehka', 'stredni', 'tezsi']
+      : ['lehka', 'stredni', 'tezsi']
     let available = true
 
     for (const diff of difficultiesToCheck) {

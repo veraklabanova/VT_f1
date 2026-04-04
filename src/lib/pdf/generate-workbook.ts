@@ -1,7 +1,6 @@
-// PDF generation will use @react-pdf/renderer
-// This is a placeholder for the PDF generation logic
-// Actual implementation requires server-side rendering
-
+import React from 'react'
+import { renderToBuffer } from '@react-pdf/renderer'
+import { WorkbookDocument } from './workbook-document'
 import type { ExerciseWithTags, Theme, DifficultyLevel } from '@/types'
 
 const difficultyLabels: Record<DifficultyLevel, string> = {
@@ -16,22 +15,22 @@ export interface WorkbookPDFData {
   exercises: ExerciseWithTags[]
 }
 
-// Note: @react-pdf/renderer PDF generation is implemented
-// in the API route due to server-side requirements.
-// This file provides helper functions for PDF data preparation.
+export function getDifficultyLabel(difficulty: DifficultyLevel): string {
+  return difficultyLabels[difficulty]
+}
 
-export function prepareWorkbookData(
+export async function generateWorkbookPDF(
   theme: Theme,
   difficulty: DifficultyLevel,
   exercises: ExerciseWithTags[]
-): WorkbookPDFData {
-  if (exercises.length !== 10) {
-    throw new Error(`Workbook must contain exactly 10 exercises, got ${exercises.length}`)
-  }
+): Promise<Buffer> {
+  const doc = React.createElement(WorkbookDocument, {
+    theme,
+    difficulty,
+    difficultyLabel: difficultyLabels[difficulty],
+    exercises,
+  })
 
-  return { theme, difficulty, exercises }
-}
-
-export function getDifficultyLabel(difficulty: DifficultyLevel): string {
-  return difficultyLabels[difficulty]
+  const buffer = await renderToBuffer(doc)
+  return Buffer.from(buffer)
 }

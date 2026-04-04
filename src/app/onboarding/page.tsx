@@ -45,13 +45,13 @@ const severityLabels: Record<SeverityLevel, string> = {
   tezsi: 'Těžší',
 }
 
-// Mock themes for local testing (will be replaced by API call when Supabase is connected)
-const MOCK_THEMES = [
-  { id: 'theme-rodina', name: 'Rodina', description: 'Rodinné vztahy, společné aktivity a vzpomínky' },
-  { id: 'theme-zahrada', name: 'Zahrada', description: 'Zahradničení, rostliny, příroda kolem domu' },
-  { id: 'theme-dum', name: 'Dům', description: 'Domácnost, vybavení bytu, každodenní činnosti doma' },
-  { id: 'theme-jaro', name: 'Jaro', description: 'Jarní příroda, tradice a aktivity spojené s jarem' },
-  { id: 'theme-domaci-prace', name: 'Domácí práce', description: 'Vaření, úklid, praní a další domácí činnosti' },
+// Fallback themes for local testing without Supabase
+const FALLBACK_THEMES = [
+  { id: 'theme-rodina', name: 'Rodina', description: 'Rodinné vztahy, společné aktivity a vzpomínky', available: true },
+  { id: 'theme-zahrada', name: 'Zahrada', description: 'Zahradničení, rostliny, příroda kolem domu', available: true },
+  { id: 'theme-dum', name: 'Dům', description: 'Domácnost, vybavení bytu, každodenní činnosti doma', available: false },
+  { id: 'theme-jaro', name: 'Jaro', description: 'Jarní příroda, tradice a aktivity spojené s jarem', available: false },
+  { id: 'theme-domaci-prace', name: 'Domácí práce', description: 'Vaření, úklid, praní a další domácí činnosti', available: false },
 ]
 
 export default function OnboardingPage() {
@@ -63,12 +63,34 @@ export default function OnboardingPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [severity, setSeverity] = useState<SeverityLevel | null>(null)
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null)
+  const [themes, setThemes] = useState<{ id: string; name: string; description: string | null; available: boolean }[]>(FALLBACK_THEMES)
+  const [themesLoaded, setThemesLoaded] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [downloaded, setDownloaded] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const isOrg = role === 'organizace'
   const isFirstPerson = role === 'osoba_s_postizenim'
   const totalSteps = isOrg ? TOTAL_STEPS_ORG : TOTAL_STEPS_INDIVIDUAL
+
+  // Load themes from API
+  useEffect(() => {
+    async function loadThemes() {
+      try {
+        const res = await fetch('/api/themes/available')
+        if (res.ok) {
+          const data = await res.json()
+          if (data.themes && data.themes.length > 0) {
+            setThemes(data.themes)
+          }
+        }
+      } catch {
+        // Use fallback themes
+      }
+      setThemesLoaded(true)
+    }
+    loadThemes()
+  }, [])
 
   // Compute current logical step based on role
   function getStepName(): string {
@@ -122,11 +144,43 @@ export default function OnboardingPage() {
   }
 
   async function handleGenerate() {
+    if (!selectedTheme || !severity) return
     setGenerating(true)
-    // Simulate generation (actual API call requires Supabase)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setGenerating(false)
-    setDownloaded(true)
+    setError(null)
+
+    try {
+      const res = await fetch('/api/workbooks/generate-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          theme_id: selectedTheme,
+          difficulty: severity,
+        }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Chyba při generování sešitu')
+      }
+
+      // Download the PDF
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      const themeName = themes.find((t) => t.id === selectedTheme)?.name || 'sesit'
+      a.href = url
+      a.download = `vlastnim-tempem-${themeName.toLowerCase()}-${severity}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      setDownloaded(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Chyba při generování')
+    } finally {
+      setGenerating(false)
+    }
   }
 
   const stepProgress = Math.round(((step + 1) / totalSteps) * 100)
@@ -287,23 +341,33 @@ export default function OnboardingPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {MOCK_THEMES.map((theme) => (
-                <Card
-                  key={theme.id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => handleThemeSelect(theme.id)}
-                >
-                  <CardHeader>
-                    <CardTitle>{theme.name}</CardTitle>
-                    <CardDescription>{theme.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button className="w-full gap-2">
-                      Vybrat <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              {themes.map((theme) => {
+                const available = 'available' in theme ? theme.available : true
+                return (
+                  <Card
+                    key={theme.id}
+                    className={available
+                      ? 'cursor-pointer hover:shadow-lg transition-shadow border-primary/30'
+                      : 'opacity-50'}
+                  >
+                    <CardHeader>
+                      <CardTitle>{theme.name}</CardTitle>
+                      <CardDescription>{theme.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {available ? (
+                        <Button className="w-full gap-2" onClick={() => handleThemeSelect(theme.id)}>
+                          Vybrat <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <Badge variant="secondary" className="w-full justify-center py-2">
+                          Připravujeme
+                        </Badge>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           </div>
         )}
@@ -326,7 +390,7 @@ export default function OnboardingPage() {
                   <CardContent className="py-8">
                     <div className="space-y-4">
                       <div className="text-sm text-muted-foreground">
-                        <p>Téma: <strong>{MOCK_THEMES.find((t) => t.id === selectedTheme)?.name}</strong></p>
+                        <p>Téma: <strong>{themes.find((t) => t.id === selectedTheme)?.name}</strong></p>
                         {severity && <p>Obtížnost: <strong>{severityLabels[severity]}</strong></p>}
                         <p>Formát: PDF, 12 stran, 10 cvičení</p>
                       </div>
@@ -345,6 +409,11 @@ export default function OnboardingPage() {
                           <><Download className="h-5 w-5" /> Stáhnout sešit zdarma</>
                         )}
                       </Button>
+                      {error && (
+                        <Alert variant="destructive">
+                          <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
