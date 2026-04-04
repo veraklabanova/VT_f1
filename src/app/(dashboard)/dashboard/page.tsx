@@ -28,7 +28,8 @@ export default async function DashboardPage() {
 
   const p = profile as Profile
   const isOrg = p.role === 'organizace'
-  const needsAssessment = !isOrg && !p.severity_level
+  const isAdmin = p.role === 'admin'
+  const needsAssessment = !isOrg && !isAdmin && !p.severity_level
 
   const { count: workbookCount } = await supabase
     .from('workbooks')
@@ -50,7 +51,7 @@ export default async function DashboardPage() {
 
       {/* Status cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        {!isOrg && (
+        {!isOrg && !isAdmin && (
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Úroveň obtížnosti</CardDescription>

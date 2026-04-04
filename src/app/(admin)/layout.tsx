@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Brain, LayoutDashboard, Wand2, CheckSquare, Library, FolderTree, AlertTriangle, Shield, Archive } from 'lucide-react'
+import { Brain, LayoutDashboard, Wand2, CheckSquare, Library, FolderTree, AlertTriangle, Shield, Archive, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { AdminLogout } from '@/components/admin/logout-button'
 
 const adminNavItems = [
   { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -66,10 +67,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               </Link>
             ))}
           </nav>
-          <div className="ml-auto">
-            <Link href="/">
-              <Button variant="outline" size="sm">Zpět</Button>
+          <div className="ml-auto flex items-center gap-2">
+            <Link href="/dashboard">
+              <Button variant="outline" size="sm">Zpět do aplikace</Button>
             </Link>
+            <AdminLogout />
           </div>
         </div>
       </header>

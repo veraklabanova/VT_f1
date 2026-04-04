@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -31,6 +31,7 @@ export default function WorkbooksPage() {
   const [workbooks, setWorkbooks] = useState<WorkbookItem[]>([])
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
   useEffect(() => {
     loadWorkbooks()
@@ -67,6 +68,48 @@ export default function WorkbooksPage() {
       toast.error(err instanceof Error ? err.message : 'Chyba při generování')
     } finally {
       setGenerating(false)
+    }
+  }
+
+  async function handleDownload(wb: WorkbookItem) {
+    // If workbook has a stored PDF URL, use it
+    if (wb.pdf_url) {
+      window.open(wb.pdf_url, '_blank')
+      return
+    }
+
+    // Otherwise generate PDF on-the-fly
+    setDownloadingId(wb.id)
+    try {
+      const res = await fetch('/api/workbooks/generate-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          theme_id: wb.theme_id,
+          difficulty: wb.difficulty,
+        }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Chyba při generování PDF')
+      }
+
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `vlastnim-tempem-${wb.themes?.name?.toLowerCase() || 'sesit'}-${wb.difficulty}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      toast.success('PDF staženo')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Chyba při stahování')
+    } finally {
+      setDownloadingId(null)
     }
   }
 
@@ -123,13 +166,19 @@ export default function WorkbooksPage() {
                     </div>
                   </div>
                 </div>
-                {wb.pdf_url && (
-                  <a href={wb.pdf_url} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <Download className="h-4 w-4" /> Stáhnout
-                    </Button>
-                  </a>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => handleDownload(wb)}
+                  disabled={downloadingId === wb.id}
+                >
+                  {downloadingId === wb.id ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Generuji...</>
+                  ) : (
+                    <><Download className="h-4 w-4" /> Stáhnout PDF</>
+                  )}
+                </Button>
               </CardContent>
             </Card>
           ))}

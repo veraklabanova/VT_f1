@@ -14,7 +14,6 @@ export default function Home() {
           <p className="text-sm text-amber-800">
             <strong>Toto je funkční prototyp</strong> aplikace Vlastním tempem.
             Slouží pro testování a demonstraci. Data a obsah mohou být neúplné.
-            Aplikaci provozuje spolek Vlastním tempem, z.s.
           </p>
         </div>
       </div>

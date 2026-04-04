@@ -213,3 +213,47 @@ Tento dokument eviduje změny oproti původní projektové dokumentaci (PAB_Vlas
 - Registrační stránka — po úspěšné registraci čte `localStorage` klíč `vt_onboarding` a přenáší assessment data do DB
 - Onboarding wizard — ukládá kompletní data (role, answers, severity) do `localStorage`
 - Auth callback — po ověření emailu přenese data z localStorage do profilu
+
+---
+
+## BL-007: Admin — chybí možnost odhlášení
+
+**Datum:** 2026-04-04
+**Priorita:** P1
+**Stav:** Implementováno
+
+### Popis
+
+V admin rozhraní chybí tlačítko pro odhlášení. Uživatel musí nejdřív kliknout "Zpět" do uživatelské části a tam se odhlásit. Admin layout by měl mít vlastní odhlašovací tlačítko v navigaci.
+
+### Dopad na dokumentaci
+
+- Žádný dopad na PAB — jedná se o chybějící UX prvek
+
+---
+
+## BL-008: Onboarding výběr témat — zobrazovat jen dostupná témata
+
+**Datum:** 2026-04-04
+**Priorita:** P1
+**Stav:** Implementováno
+
+### Popis
+
+**Aktuální stav:**
+- Onboarding wizard zobrazuje všech 5 témat (Rodina, Zahrada, Dům, Jaro, Domácí práce) bez ohledu na to, zda k nim existují schválená cvičení
+- Uživatel může vybrat téma, pro které není dostatek cvičení → generování sešitu selže
+
+**Požadovaný stav:**
+- Témata s dostatkem dat (splňující I8) by měla být graficky zvýrazněna a klikatelná
+- Témata bez dat by měla mít vysvětlující štítek (např. "Připravujeme") a být vizuálně odlišena (šedá, neklikatelná nebo s upozorněním)
+- V onboarding wizardu se toto řeší pomocí mock témat — je potřeba napojit na reálné API `/api/themes/available`
+
+### Dopad na dokumentaci
+
+**Ovlivněné sekce PAB:**
+- Invariant I8 — kontrola dostupnosti tématu se musí promítnout i do onboarding wizardu, nejen do dashboard stránky témat
+
+### Poznámka
+
+Dashboard stránka `/themes` již správně filtruje témata dle I8. Problém je pouze v onboarding wizardu, který používá hardcoded mock témata.
