@@ -1,65 +1,199 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { Heart, Users, Building2, ArrowRight, BookOpen, Brain, Shield } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen flex flex-col">
+      {/* Yellow Prototype Banner */}
+      <div className="bg-amber-100 border-b border-amber-300 px-4 py-3">
+        <div className="max-w-5xl mx-auto flex items-start gap-3">
+          <Shield className="h-5 w-5 text-amber-700 mt-0.5 shrink-0" />
+          <p className="text-sm text-amber-800">
+            <strong>Toto je funkční prototyp</strong> aplikace Vlastním tempem.
+            Slouží pro testování a demonstraci. Data a obsah mohou být neúplné.
+            Aplikaci provozuje spolek Vlastním tempem, z.s.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+
+      {/* Header */}
+      <header className="border-b bg-white">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Brain className="h-7 w-7 text-primary" />
+            <span className="text-xl font-bold">Vlastním tempem</span>
+          </div>
+          <Link href="/login">
+            <Button variant="outline" size="sm">Přihlásit se</Button>
+          </Link>
         </div>
+      </header>
+
+      {/* Hero */}
+      <main className="flex-1">
+        <section className="py-16 px-4 bg-gradient-to-b from-white to-gray-50">
+          <div className="max-w-5xl mx-auto text-center">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-4">
+              Kognitivní trénink
+              <span className="text-primary block mt-1">vlastním tempem</span>
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+              Strukturované pracovní sešity pro osoby s kognitivním postižením
+              a jejich pečující. Profesionálně navržené, přizpůsobené
+              individuální úrovni.
+            </p>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section className="py-12 px-4 bg-white">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl font-bold text-center mb-8">Jak to funguje</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="text-center p-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-primary font-bold text-lg">1</span>
+                </div>
+                <h3 className="font-semibold mb-2">Vyplňte dotazník</h3>
+                <p className="text-sm text-muted-foreground">
+                  Krátký dotazník pomůže určit správnou úroveň obtížnosti
+                  materiálů.
+                </p>
+              </div>
+              <div className="text-center p-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-primary font-bold text-lg">2</span>
+                </div>
+                <h3 className="font-semibold mb-2">Vyberte téma</h3>
+                <p className="text-sm text-muted-foreground">
+                  Zvolte si téma, které je blízké — rodina, zahrada, domácnost
+                  a další.
+                </p>
+              </div>
+              <div className="text-center p-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-primary font-bold text-lg">3</span>
+                </div>
+                <h3 className="font-semibold mb-2">Stáhněte sešit</h3>
+                <p className="text-sm text-muted-foreground">
+                  Stáhněte si pracovní sešit ve formátu PDF — připravený
+                  k vytištění.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Registration paths */}
+        <section className="py-12 px-4 bg-gray-50">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl font-bold text-center mb-2">Začněte zdarma</h2>
+            <p className="text-center text-muted-foreground mb-8">
+              První pracovní sešit je zdarma. Vyberte, kdo jste:
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Person with impairment */}
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardHeader className="text-center pb-2">
+                  <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Heart className="h-7 w-7 text-blue-600" />
+                  </div>
+                  <CardTitle className="text-lg">Mám potíže s pamětí</CardTitle>
+                  <CardDescription>
+                    Chci trénovat paměť a další schopnosti
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <Link href="/onboarding?role=osoba_s_postizenim">
+                    <Button className="w-full gap-2">
+                      Začít <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              {/* Caregiver */}
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardHeader className="text-center pb-2">
+                  <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Users className="h-7 w-7 text-green-600" />
+                  </div>
+                  <CardTitle className="text-lg">Starám se o blízkého</CardTitle>
+                  <CardDescription>
+                    Hledám materiály pro pečovanou osobu
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <Link href="/onboarding?role=pecujici">
+                    <Button className="w-full gap-2">
+                      Začít <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              {/* Organization */}
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardHeader className="text-center pb-2">
+                  <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Building2 className="h-7 w-7 text-purple-600" />
+                  </div>
+                  <CardTitle className="text-lg">Jsme organizace</CardTitle>
+                  <CardDescription>
+                    Domov pro seniory, rehabilitační centrum aj.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <Link href="/onboarding?role=organizace">
+                    <Button className="w-full gap-2">
+                      Začít <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section className="py-12 px-4 bg-white">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="flex gap-4">
+                <BookOpen className="h-6 w-6 text-primary shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-semibold mb-1">Odborně navržené cvičení</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Cvičení jsou navržena s ohledem na kognitivní funkce —
+                    paměť, pozornost, orientaci, jazyk a logické myšlení.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <Brain className="h-6 w-6 text-primary shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-semibold mb-1">Přizpůsobená obtížnost</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Tři úrovně obtížnosti zajistí, že materiály odpovídají
+                    aktuálním schopnostem.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t bg-white py-6 px-4">
+        <div className="max-w-5xl mx-auto text-center text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} Vlastním tempem, z.s. Všechna práva vyhrazena.</p>
+        </div>
+      </footer>
     </div>
-  );
+  )
 }
