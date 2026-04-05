@@ -1,4 +1,4 @@
-import type { SeverityLevel } from '@/types'
+import type { SeverityLevel, DifficultyLevel } from '@/types'
 
 export function computeSeverity(answers: number[]): {
   averageScore: number
@@ -26,6 +26,18 @@ export function computeSeverity(answers: number[]): {
   }
 
   return { averageScore, severity }
+}
+
+/**
+ * Maps severity level (degree of impairment) to exercise difficulty.
+ * Inverse mapping: mild impairment → harder exercises, severe impairment → easier exercises.
+ */
+export function mapSeverityToDifficulty(severity: SeverityLevel): DifficultyLevel {
+  switch (severity) {
+    case 'lehka':   return 'tezsi'   // mild impairment → challenging exercises
+    case 'stredni': return 'stredni' // moderate → moderate
+    case 'tezsi':   return 'lehka'   // severe impairment → easy exercises
+  }
 }
 
 export const ASSESSMENT_QUESTIONS = [

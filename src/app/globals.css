@@ -49,6 +49,29 @@
 }
 
 :root {
+  /* BL-018: Landing page design system (Varianta B) */
+  --lp-bg-primary: #FDF6EE;
+  --lp-bg-section: #FFE4C0;
+  --lp-amber: #B5660A;
+  --lp-amber-hover: #8F4E07;
+  --lp-amber-light: #FDECD6;
+  --lp-amber-step: #D4850A;
+  --lp-sage: #2E6B2A;
+  --lp-sage-light: #C5E4C2;
+  --lp-terra: #B84535;
+  --lp-terra-light: #F5C5BC;
+  --lp-text: #1A1208;
+  --lp-text-secondary: #4A3520;
+  --lp-text-on-dark: #FFFFFF;
+  --lp-text-on-dark-muted: #E8D8C4;
+  --lp-card-bg: #FFFFFF;
+  --lp-border: #C4A882;
+  --lp-footer-bg: #1A1208;
+  --lp-divider: #B5660A;
+  --lp-shadow-card: 0 4px 16px rgba(26, 18, 8, 0.10), 0 1px 4px rgba(26, 18, 8, 0.06);
+  --lp-shadow-card-hover: 0 8px 28px rgba(26, 18, 8, 0.14), 0 2px 8px rgba(26, 18, 8, 0.08);
+  --lp-focus-ring: 0 0 0 3px var(--lp-amber-light), 0 0 0 5px var(--lp-amber);
+
   /* BL-010: Warm palette */
   --background: #FEFDFB;
   --foreground: #2C2A29;

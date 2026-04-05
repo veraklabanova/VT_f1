@@ -8,8 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ASSESSMENT_QUESTIONS } from '@/lib/assessment/evaluate'
-import { computeSeverity } from '@/lib/assessment/evaluate'
+import { ASSESSMENT_QUESTIONS, computeSeverity, mapSeverityToDifficulty } from '@/lib/assessment/evaluate'
 import type { UserRole, SeverityLevel } from '@/types'
 
 const TOTAL_STEPS_INDIVIDUAL = 4 // role → assessment → theme → download
@@ -143,37 +142,47 @@ export default function OnboardingPage() {
     setStep(isOrg ? 2 : 3)
   }
 
+  async function downloadPdf(themeId: string, difficulty: string, label: string) {
+    const res = await fetch('/api/workbooks/generate-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ theme_id: themeId, difficulty }),
+    })
+
+    if (!res.ok) {
+      const data = await res.json()
+      throw new Error(data.error || 'Chyba při generování sešitu')
+    }
+
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    const themeName = themes.find((t) => t.id === themeId)?.name || 'sesit'
+    a.href = url
+    a.download = `vlastnim-tempem-${themeName.toLowerCase()}-${label}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   async function handleGenerate() {
-    if (!selectedTheme || !severity) return
+    if (!selectedTheme) return
     setGenerating(true)
     setError(null)
 
     try {
-      const res = await fetch('/api/workbooks/generate-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          theme_id: selectedTheme,
-          difficulty: severity,
-        }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || 'Chyba při generování sešitu')
+      if (isOrg) {
+        // Organizations: generate all 3 difficulty levels
+        for (const diff of ['lehka', 'stredni', 'tezsi'] as const) {
+          await downloadPdf(selectedTheme, diff, diff)
+        }
+      } else {
+        // Individuals: map severity to exercise difficulty (inverse)
+        if (!severity) return
+        const exerciseDifficulty = mapSeverityToDifficulty(severity)
+        await downloadPdf(selectedTheme, exerciseDifficulty, exerciseDifficulty)
       }
-
-      // Download the PDF
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      const themeName = themes.find((t) => t.id === selectedTheme)?.name || 'sesit'
-      a.href = url
-      a.download = `vlastnim-tempem-${themeName.toLowerCase()}-${severity}.pdf`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
 
       setDownloaded(true)
     } catch (err) {
@@ -187,8 +196,8 @@ export default function OnboardingPage() {
 
   return (
     <div className={`min-h-screen bg-background ${isFirstPerson ? 'simplified-mode a11y-theme' : ''}`}>
-      {/* Header */}
-      <header className="border-b bg-white px-4 py-3">
+      {/* Header — fixed at top */}
+      <header className="border-b bg-white px-4 py-3 fixed top-0 left-0 right-0 z-50">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Brain className="h-6 w-6 text-primary" />
@@ -200,15 +209,17 @@ export default function OnboardingPage() {
             </Badge>
           )}
         </div>
+        {/* Progress bar */}
+        <div className="h-1 bg-gray-200 -mx-4 -mb-3 mt-3">
+          <div
+            className="h-1 bg-primary transition-all duration-300"
+            style={{ width: `${stepProgress}%` }}
+          />
+        </div>
       </header>
 
-      {/* Progress bar */}
-      <div className="h-1 bg-gray-200">
-        <div
-          className="h-1 bg-primary transition-all duration-300"
-          style={{ width: `${stepProgress}%` }}
-        />
-      </div>
+      {/* Spacer for fixed header */}
+      <div className="h-14" />
 
       <main className="max-w-3xl mx-auto px-4 py-8">
 
@@ -408,9 +419,9 @@ export default function OnboardingPage() {
                         className="w-full gap-2 text-lg py-6"
                       >
                         {generating ? (
-                          <><Loader2 className="h-6 w-6 animate-spin" /> Generuji sešit...</>
+                          <><Loader2 className="h-6 w-6 animate-spin" /> {isOrg ? 'Generuji sešity...' : 'Generuji sešit...'}</>
                         ) : (
-                          <><Download className="h-6 w-6" /> Stáhnout můj první sešit (zdarma)</>
+                          <><Download className="h-6 w-6" /> {isOrg ? 'Stáhnout sešity ve třech obtížnostech (zdarma)' : 'Stáhnout můj první sešit (zdarma)'}</>
                         )}
                       </Button>
                       {error && (

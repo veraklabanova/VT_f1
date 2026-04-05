@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, XCircle, Archive, Loader2, ImageIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import { ImageLightbox } from '@/components/ui/image-lightbox'
 
 interface ReviewExercise {
   id: string
@@ -114,7 +115,7 @@ export default function ReviewPage() {
                         <ImageIcon className="h-8 w-8 text-gray-400" />
                       </div>
                     ) : (
-                      <img src={exercise.image_url} alt="Ilustrace" className="w-32 h-32 object-cover rounded-lg shrink-0" />
+                      <ImageLightbox src={exercise.image_url} />
                     )
                   ) : null}
                   <div className="flex-1 space-y-2">

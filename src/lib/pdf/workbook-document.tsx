@@ -2,150 +2,412 @@ import React from 'react'
 import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer'
 import type { ExerciseWithTags, Theme, DifficultyLevel } from '@/types'
 
-// Register font with Czech character support
+// Register Roboto font (TTF) — reliable with react-pdf, supports Czech diacritics
 Font.register({
   family: 'Roboto',
   fonts: [
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf', fontWeight: 'normal' },
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf', fontWeight: 'bold' },
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf', fontWeight: 'light' },
+    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf', fontWeight: 400 },
+    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf', fontWeight: 700 },
+    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf', fontWeight: 300 },
   ],
 })
 
-const styles = StyleSheet.create({
+// Disable word hyphenation globally — hyphenation makes reading harder for target audience
+Font.registerHyphenationCallback((word) => [word])
+
+// ── Color Tokens ──
+const C = {
+  bgPrimary: '#FDF6EE',
+  bgSection: '#FFE4C0',
+  amber: '#B5660A',
+  amberLight: '#FDECD6',
+  sage: '#2E6B2A',
+  sageHalo: '#E0EDD8',
+  amberLine: '#F0D9BC',
+  amberLine35: '#EDDABC',
+  terraLight: '#F5C5BC',
+  card: '#FFFFFF',
+  border: '#C4A882',
+  borderStrong: '#8F6A40',
+  textPrimary: '#1A1208',
+  textSecondary: '#4A3520',
+  textOnDark: '#FFFFFF',
+}
+
+// ── Shared styles ──
+const s = StyleSheet.create({
   page: {
     fontFamily: 'Roboto',
-    paddingTop: 60,
-    paddingBottom: 60,
-    paddingHorizontal: 50,
-    backgroundColor: '#ffffff',
-  },
-  // Cover page
-  coverPage: {
-    fontFamily: 'Roboto',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    padding: 50,
-  },
-  coverTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  coverSubtitle: {
-    fontSize: 18,
-    color: '#666666',
-    marginBottom: 40,
-    textAlign: 'center',
-  },
-  coverTheme: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginTop: 40,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  coverDifficulty: {
-    fontSize: 16,
-    color: '#888888',
-    backgroundColor: '#f0f0f0',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 4,
-    textAlign: 'center',
-  },
-  coverImage: {
-    width: 250,
-    height: 250,
-    borderRadius: 12,
-    marginVertical: 30,
-  },
-  coverOrg: {
-    fontSize: 12,
-    color: '#999999',
-    marginTop: 'auto',
-    textAlign: 'center',
+    backgroundColor: C.bgPrimary,
+    position: 'relative',
+    width: '100%',
+    height: '100%',
   },
 
-  // Exercise page
-  exerciseHeader: {
+  // ── Cover ──
+  coverContent: {
+    paddingHorizontal: 48,
+    paddingTop: 40,
+    alignItems: 'center',
+  },
+  coverHeadline1: {
+    fontSize: 34,
+    fontWeight: 700,
+    color: C.textPrimary,
+    textAlign: 'center',
+    lineHeight: 1.2,
+  },
+  coverHeadline2: {
+    fontSize: 34,
+    fontWeight: 700,
+    color: C.amber,
+    textAlign: 'center',
+    lineHeight: 1.2,
+    marginTop: 4,
+  },
+  coverSubtitle: {
+    fontSize: 13,
+    fontWeight: 400,
+    color: C.textSecondary,
+    marginTop: 12,
+    textAlign: 'center',
+  },
+  coverDivider: {
+    width: 698,
+    height: 1,
+    backgroundColor: C.amberLine,
+    marginTop: 14,
+    alignSelf: 'center',
+  },
+
+  // Image placeholder (cover — slightly smaller to fit page)
+  imageOuter: {
+    width: 360,
+    height: 360,
+    borderRadius: 20,
+    backgroundColor: C.sageHalo,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+  },
+  imageInner: {
+    width: 330,
+    height: 330,
+    borderRadius: 20,
+    backgroundColor: C.card,
+    borderWidth: 1,
+    borderColor: C.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  coverImage: {
+    width: 300,
+    height: 300,
+    objectFit: 'contain',
+  },
+  imagePlaceholderText: {
+    fontSize: 11,
+    color: C.textSecondary,
+    fontWeight: 400,
+  },
+
+  // Topic card (cover)
+  topicCard: {
+    width: 400,
+    height: 118,
+    borderRadius: 20,
+    backgroundColor: C.bgSection,
+    borderWidth: 1.5,
+    borderColor: C.border,
+    overflow: 'hidden',
+    marginTop: 16,
+    position: 'relative',
+  },
+  topicCardAccent: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 5,
+    height: 118,
+    backgroundColor: C.amber,
+  },
+  topicCardLabel: {
+    fontSize: 11,
+    fontWeight: 400,
+    color: C.textSecondary,
+    textAlign: 'center',
+    marginTop: 16,
+  },
+  topicCardName: {
+    fontSize: 40,
+    fontWeight: 700,
+    color: C.textPrimary,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+
+  // ── Footer (shared) ──
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 48,
+    backgroundColor: C.bgSection,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+  },
+  footerTopLine: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 3,
+    backgroundColor: C.amber,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  footerText: {
+    fontSize: 11,
+    fontWeight: 400,
+    color: C.textSecondary,
+  },
+  footerBadge: {
+    backgroundColor: C.sage,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+  },
+  footerBadgeText: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: C.textOnDark,
+  },
+  footerPageNum: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: C.amber,
+  },
+
+  // ── Exercise Page ──
+  exHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    paddingBottom: 10,
+    paddingHorizontal: 48,
+    paddingTop: 20,
   },
-  exerciseNumber: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#666666',
+  exNumber: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: C.textPrimary,
   },
-  exerciseTags: {
-    fontSize: 9,
-    color: '#999999',
+  exTags: {
+    fontSize: 10,
+    fontWeight: 400,
+    color: C.textSecondary,
+    textAlign: 'right',
+    maxWidth: 380,
   },
-  exerciseText: {
-    fontSize: 14,
-    lineHeight: 1.8,
-    color: '#333333',
-    marginBottom: 20,
-  },
-  exerciseImage: {
-    width: 300,
-    height: 300,
-    alignSelf: 'center',
-    borderRadius: 8,
+  exDivider: {
+    width: 698,
+    height: 1,
+    backgroundColor: C.amberLine35,
+    marginLeft: 48,
     marginTop: 10,
   },
 
-  // Instructions page
-  instructionsTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginBottom: 20,
+  // Topic chip (no emoji — Roboto doesn't support them)
+  topicChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.amberLight,
+    borderRadius: 13,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    alignSelf: 'flex-start',
+    marginLeft: 48,
+    marginTop: 16,
   },
-  instructionsText: {
+  topicChipText: {
     fontSize: 11,
-    lineHeight: 1.7,
-    color: '#444444',
-    marginBottom: 10,
-  },
-  instructionsBold: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginTop: 15,
-    marginBottom: 5,
+    fontWeight: 700,
+    color: C.amber,
   },
 
-  // Footer
-  footer: {
+  // Content card (instruction text)
+  contentCard: {
+    marginHorizontal: 48,
+    marginTop: 12,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: C.borderStrong,
+    backgroundColor: C.card,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  contentCardAccent: {
     position: 'absolute',
-    bottom: 30,
-    left: 50,
-    right: 50,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    left: 0,
+    top: 0,
+    width: 5,
+    height: '100%',
+    backgroundColor: C.sage,
+  },
+  contentCardBody: {
+    paddingVertical: 18,
+    paddingLeft: 24,
+    paddingRight: 24,
+  },
+  contentCardText: {
+    fontSize: 14,
+    fontWeight: 400,
+    color: C.textPrimary,
+    lineHeight: 1.65,
+  },
+
+  // Exercise image placeholder (reduced to prevent overflow)
+  exImageOuter: {
+    width: 340,
+    height: 310,
+    borderRadius: 20,
+    backgroundColor: C.sageHalo,
     alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 12,
   },
-  footerText: {
-    fontSize: 9,
-    color: '#bbbbbb',
+  exImageInner: {
+    width: 310,
+    height: 280,
+    borderRadius: 16,
+    backgroundColor: C.card,
+    borderWidth: 1.5,
+    borderColor: C.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
-  pageNumber: {
-    fontSize: 9,
-    color: '#bbbbbb',
+  exImage: {
+    width: 280,
+    height: 250,
+    objectFit: 'contain',
+  },
+
+  // Answer card — fixed position on every exercise page (above footer)
+  answerCard: {
+    position: 'absolute',
+    bottom: 62,
+    left: 48,
+    right: 48,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: C.borderStrong,
+    backgroundColor: C.card,
+    overflow: 'hidden',
+    height: 180,
+  },
+  answerCardAccent: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 5,
+    height: 180,
+    backgroundColor: C.sage,
+  },
+  answerLabel: {
+    fontSize: 13,
+    fontWeight: 700,
+    color: C.textSecondary,
+    marginTop: 14,
+    marginLeft: 24,
+  },
+  answerLine: {
+    height: 1.5,
+    backgroundColor: C.borderStrong,
+    marginHorizontal: 24,
+    width: 650,
+  },
+
+  // ── Instructions Page ──
+  instrTitle: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: C.textPrimary,
+    marginBottom: 4,
+  },
+  instrSectionTitle: {
+    fontSize: 13,
+    fontWeight: 700,
+    color: C.textSecondary,
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  instrText: {
+    fontSize: 14,
+    fontWeight: 400,
+    color: C.textPrimary,
+    lineHeight: 1.65,
   },
 })
+
+// ── Reusable Components ──
+
+function PdfFooter({ leftText, rightElement }: { leftText: string; rightElement: React.ReactNode }) {
+  return (
+    <View style={s.footer} fixed>
+      <View style={s.footerTopLine} />
+      <Text style={s.footerText}>{leftText}</Text>
+      {rightElement}
+    </View>
+  )
+}
+
+function ContentCardWithAccent({ children, accentColor, style }: {
+  children: React.ReactNode
+  accentColor?: string
+  style?: any
+}) {
+  return (
+    <View style={[s.contentCard, style]}>
+      <View style={[s.contentCardAccent, accentColor ? { backgroundColor: accentColor } : {}]} />
+      <View style={s.contentCardBody}>
+        {children}
+      </View>
+    </View>
+  )
+}
+
+function ImagePlaceholder({
+  imageUrl,
+  outerStyle,
+  innerStyle,
+  imgStyle,
+}: {
+  imageUrl: string | null
+  outerStyle: any
+  innerStyle: any
+  imgStyle: any
+}) {
+  return (
+    <View style={outerStyle}>
+      <View style={innerStyle}>
+        {imageUrl ? (
+          <Image src={imageUrl} style={imgStyle} />
+        ) : (
+          <Text style={s.imagePlaceholderText}>[ ilustrace ]</Text>
+        )}
+      </View>
+    </View>
+  )
+}
+
+// ── Document ──
 
 interface WorkbookDocumentProps {
   theme: Theme
@@ -155,6 +417,18 @@ interface WorkbookDocumentProps {
 }
 
 export function WorkbookDocument({ theme, difficulty, difficultyLabel, exercises }: WorkbookDocumentProps) {
+  // Count unique cognitive tags across all exercises
+  const uniqueTags = new Set<string>()
+  for (const ex of exercises) {
+    for (const tag of ex.tags) {
+      uniqueTags.add(tag.id)
+    }
+  }
+  const tagCount = uniqueTags.size
+
+  // Cover image: use first exercise's image, fallback to theme cover
+  const coverImageUrl = exercises[0]?.image_url || theme.cover_image_url || null
+
   return (
     <Document
       title={`Vlastním tempem — ${theme.name} (${difficultyLabel})`}
@@ -162,90 +436,131 @@ export function WorkbookDocument({ theme, difficulty, difficultyLabel, exercises
       subject="Pracovní sešit pro kognitivní trénink"
       language="cs"
     >
-      {/* Page 1: Cover */}
-      <Page size="A4" style={styles.coverPage}>
-        <Text style={styles.coverTitle}>Vlastním tempem</Text>
-        <Text style={styles.coverSubtitle}>Pracovní sešit</Text>
+      {/* ═══════════════ PAGE 1: COVER ═══════════════ */}
+      <Page size="A4" style={s.page}>
+        <View style={s.coverContent}>
+          <Text style={s.coverHeadline1}>Trénujte paměť a myšlení.</Text>
+          <Text style={s.coverHeadline2}>V klidu a vlastním tempem.</Text>
+          <Text style={s.coverSubtitle}>Pracovní sešit</Text>
+          <View style={s.coverDivider} />
 
-        {theme.cover_image_url && (
-          <Image src={theme.cover_image_url} style={styles.coverImage} />
-        )}
+          {/* Image: first exercise image or placeholder */}
+          <ImagePlaceholder
+            imageUrl={coverImageUrl}
+            outerStyle={s.imageOuter}
+            innerStyle={s.imageInner}
+            imgStyle={s.coverImage}
+          />
 
-        <Text style={styles.coverTheme}>{theme.name}</Text>
-        <Text style={styles.coverDifficulty}>Obtížnost: {difficultyLabel}</Text>
+          {/* Topic card */}
+          <View style={s.topicCard}>
+            <View style={s.topicCardAccent} />
+            <Text style={s.topicCardLabel}>téma sešitu</Text>
+            <Text style={s.topicCardName}>{theme.name}</Text>
+          </View>
 
-        <Text style={styles.coverOrg}>
-          Vlastním tempem, z.s. — Kognitivní trénink vlastním tempem
-        </Text>
+        </View>
+
+        {/* Footer with difficulty badge */}
+        <PdfFooter
+          leftText="Kognitivní trénink vlastním tempem"
+          rightElement={
+            <View style={s.footerBadge}>
+              <Text style={s.footerBadgeText}>Obtížnost: {difficultyLabel}</Text>
+            </View>
+          }
+        />
       </Page>
 
-      {/* Pages 2-11: Exercises */}
+      {/* ═══════════════ PAGES 2-11: EXERCISES ═══════════════ */}
       {exercises.map((exercise, index) => (
-        <Page key={exercise.id} size="A4" style={styles.page}>
-          <View style={styles.exerciseHeader}>
-            <Text style={styles.exerciseNumber}>Cvičení {index + 1} / {exercises.length}</Text>
-            <Text style={styles.exerciseTags}>
-              {exercise.tags.map((t) => t.label_cs).join(' • ')}
+        <Page key={exercise.id} size="A4" style={s.page}>
+          {/* Header: exercise number + tags */}
+          <View style={s.exHeader}>
+            <Text style={s.exNumber}>Cvičení {index + 1} / {exercises.length}</Text>
+            <Text style={s.exTags}>
+              {exercise.tags.map((t) => t.label_cs).join(' · ')}
             </Text>
           </View>
+          <View style={s.exDivider} />
 
-          <Text style={styles.exerciseText}>{exercise.text_content}</Text>
-
-          {exercise.image_url && (
-            <Image src={exercise.image_url} style={styles.exerciseImage} />
-          )}
-
-          <View style={styles.footer} fixed>
-            <Text style={styles.footerText}>Vlastním tempem — {theme.name}</Text>
-            <Text style={styles.pageNumber}>{index + 2}</Text>
+          {/* Topic chip (text only, no emoji) */}
+          <View style={s.topicChip}>
+            <Text style={s.topicChipText}>{theme.name}</Text>
           </View>
+
+          {/* Instruction card with exercise text */}
+          <ContentCardWithAccent>
+            <Text style={s.contentCardText}>{exercise.text_content}</Text>
+          </ContentCardWithAccent>
+
+          {/* Image */}
+          <ImagePlaceholder
+            imageUrl={exercise.image_url || null}
+            outerStyle={s.exImageOuter}
+            innerStyle={s.exImageInner}
+            imgStyle={s.exImage}
+          />
+
+          {/* "Moje odpovedi" card */}
+          <View style={s.answerCard}>
+            <View style={s.answerCardAccent} />
+            <Text style={s.answerLabel}>Moje odpovědi:</Text>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <View key={i} style={[s.answerLine, { marginTop: i === 0 ? 10 : 22 }]} />
+            ))}
+          </View>
+
+          {/* Footer */}
+          <PdfFooter
+            leftText={theme.name}
+            rightElement={<Text style={s.footerPageNum}>{index + 2}</Text>}
+          />
         </Page>
       ))}
 
-      {/* Page 12: Instructions */}
-      <Page size="A4" style={styles.page}>
-        <Text style={styles.instructionsTitle}>Pokyny pro pečující</Text>
-
-        <Text style={styles.instructionsBold}>Jak pracovat s tímto sešitem</Text>
-        <Text style={styles.instructionsText}>
-          Tento pracovní sešit obsahuje 10 cvičení zaměřených na různé kognitivní funkce.
-          Cvičení jsou navržena tak, aby byla přiměřená zvolené úrovni obtížnosti.
-        </Text>
-
-        <Text style={styles.instructionsBold}>Doporučený postup</Text>
-        <Text style={styles.instructionsText}>
-          1. Vyberte klidné prostředí bez rušivých vlivů.
-        </Text>
-        <Text style={styles.instructionsText}>
-          2. Pracujte na jednom cvičení denně, nebo dle možností a nálady.
-        </Text>
-        <Text style={styles.instructionsText}>
-          3. Nespěchejte — důležitý je proces, ne rychlost.
-        </Text>
-        <Text style={styles.instructionsText}>
-          4. Pokud je cvičení příliš obtížné, přeskočte ho a vraťte se k němu později.
-        </Text>
-        <Text style={styles.instructionsText}>
-          5. Chvalte a povzbuzujte — každý pokus je cenný.
-        </Text>
-
-        <Text style={styles.instructionsBold}>Důležité</Text>
-        <Text style={styles.instructionsText}>
-          Tyto materiály slouží jako podpora kognitivního tréninku a nenahrazují odbornou
-          lékařskou péči. V případě jakýchkoli pochybností se poraďte s ošetřujícím lékařem.
-        </Text>
-
-        <Text style={styles.instructionsBold}>Kontakt</Text>
-        <Text style={styles.instructionsText}>
-          Vlastním tempem, z.s.{'\n'}
-          Email: info@vlastnimtempem.cz{'\n'}
-          Web: www.vlastnimtempem.cz
-        </Text>
-
-        <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>Vlastním tempem — {theme.name}</Text>
-          <Text style={styles.pageNumber}>12</Text>
+      {/* ═══════════════ PAGE 12: INSTRUCTIONS ═══════════════ */}
+      <Page size="A4" style={s.page}>
+        {/* Header */}
+        <View style={s.exHeader}>
+          <Text style={s.exNumber}>Pokyny pro pečující</Text>
+          <Text style={s.exTags}></Text>
         </View>
+        <View style={s.exDivider} />
+
+        {/* Instructions in content card — NO topic chip on this page */}
+        <ContentCardWithAccent style={{ marginTop: 20 }}>
+          <Text style={s.instrTitle}>Jak pracovat s tímto sešitem</Text>
+          <Text style={s.instrText}>
+            Tento pracovní sešit obsahuje 10 cvičení zaměřených na různé kognitivní funkce.
+            Cvičení jsou navržena tak, aby byla přiměřená zvolené úrovni obtížnosti.
+          </Text>
+
+          <Text style={s.instrSectionTitle}>Doporučený postup</Text>
+          <Text style={s.instrText}>1. Vyberte klidné prostředí bez rušivých vlivů.</Text>
+          <Text style={s.instrText}>2. Pracujte na jednom cvičení denně, nebo dle možností a nálady.</Text>
+          <Text style={s.instrText}>3. Nespěchejte — důležitý je proces, ne rychlost.</Text>
+          <Text style={s.instrText}>4. Pokud je cvičení příliš obtížné, přeskočte ho a vraťte se k němu později.</Text>
+          <Text style={s.instrText}>5. Chvalte a povzbuzujte — každý pokus je cenný.</Text>
+
+          <Text style={s.instrSectionTitle}>Důležité</Text>
+          <Text style={s.instrText}>
+            Tyto materiály slouží jako podpora kognitivního tréninku a nenahrazují odbornou
+            lékařskou péči. V případě jakýchkoli pochybností se poraďte s ošetřujícím lékařem.
+          </Text>
+
+          <Text style={s.instrSectionTitle}>Kontakt</Text>
+          <Text style={s.instrText}>
+            Email:{'\n'}
+            Web:
+          </Text>
+        </ContentCardWithAccent>
+
+        {/* Footer */}
+        <PdfFooter
+          leftText={theme.name}
+          rightElement={<Text style={s.footerPageNum}>{exercises.length + 2}</Text>}
+        />
       </Page>
     </Document>
   )

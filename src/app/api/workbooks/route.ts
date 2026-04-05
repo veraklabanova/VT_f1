@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { selectExercises } from '@/lib/workbook/select-exercises'
+import { mapSeverityToDifficulty } from '@/lib/assessment/evaluate'
 import { workbookRequestSchema } from '@/lib/validators'
 import type { ExerciseWithTags, DifficultyLevel } from '@/types'
 
@@ -57,9 +58,10 @@ export async function POST(request: Request) {
   }
 
   // Determine difficulties to generate
+  // For individuals: map severity (impairment level) to exercise difficulty (inverse)
   const difficultiesToGenerate: DifficultyLevel[] = isOrg
     ? ['lehka', 'stredni', 'tezsi']
-    : [difficulty || profile.severity_level]
+    : [difficulty || mapSeverityToDifficulty(profile.severity_level)]
 
   // Get all approved exercises for the theme with tags
   const { data: exercises } = await adminSupabase

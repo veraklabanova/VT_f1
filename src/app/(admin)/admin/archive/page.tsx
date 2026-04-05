@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { RotateCcw, Loader2, ImageIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import { ImageLightbox } from '@/components/ui/image-lightbox'
 
 const difficultyLabels: Record<string, string> = { lehka: 'Lehká', stredni: 'Střední', tezsi: 'Těžší' }
 
@@ -110,7 +111,7 @@ export default function ArchivePage() {
                         <ImageIcon className="h-6 w-6 text-gray-400" />
                       </div>
                     ) : (
-                      <img src={exercise.image_url} alt="" className="w-24 h-24 object-cover rounded-lg shrink-0" />
+                      <ImageLightbox src={exercise.image_url} thumbnailClassName="w-24 h-24 object-cover rounded-lg shrink-0" />
                     )
                   ) : null}
                   <div className="flex-1">

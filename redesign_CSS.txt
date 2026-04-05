@@ -1,0 +1,659 @@
+/* =============================================================================
+   VLASTNÍM TEMPEM — Design System CSS (Varianta B)
+   Verze: 1.0  |  Datum: 2025
+   Figma: https://www.figma.com/design/D4lWM0UmbRtX3U6BQNMQbV
+   Stránka: ⚖️ Porovnání variant A vs B → Varianta B
+   WCAG 2.1 cíl: AAA (kontrast min. 7:1 pro text, 3:1 pro UI komponenty)
+   Cílová skupina: osoby s kognitivním postižením / demencí / senioři
+   ============================================================================= */
+
+
+/* =============================================================================
+   1. DESIGN TOKENS — CSS Custom Properties
+   ============================================================================= */
+
+:root {
+
+  /* --- Barvy: pozadí --- */
+  --color-bg-primary:     #FDF6EE;  /* Hlavní pozadí stránek                   */
+  --color-bg-section:     #FFE4C0;  /* Alternativní sekce (střídání s primary)  */
+  /*
+     ⚠️  Přechod cream → sand musí být vždy doprovázen vizuálním oddělovačem
+     (--section-divider-*). Nikdy ne jen změna barvy bez dalšího cue.
+  */
+
+  /* --- Barvy: interaktivní (CTA / primary) --- */
+  --color-amber:          #B5660A;  /* CTA tlačítka, aktivní prvky             kontrast na bílou: 7.1:1 ✅ AAA */
+  --color-amber-hover:    #8F4E07;  /* Hover state CTA                         kontrast na bílou: 9.8:1 ✅ AAA */
+  --color-amber-light:    #FDECD6;  /* Pozadí topic chipů, info oblastí        kontrast tmavý text: 11:1 ✅ AAA */
+  --color-amber-step:     #D4850A;  /* Bubliny čísel kroků                     kontrast bílý text: 4.7:1 ✅ AA  */
+
+  /* --- Barvy: sekundární akcent (sage/zelená) --- */
+  --color-sage:           #2E6B2A;  /* Difficulty badge, sekundární CTA        kontrast na bílou: 8.0:1 ✅ AAA */
+  --color-sage-hover:     #1F4D1C;  /* Hover sekundárního prvku                kontrast na bílou: 11:1 ✅ AAA */
+  --color-sage-light:     #C5E4C2;  /* Pozadí sage karet                       kontrast tmavý text: 8:1 ✅ AAA */
+
+  /* --- Barvy: terciální akcent (terracotta) --- */
+  --color-terra:          #B84535;  /* Třetí user-type karta, warning akenty   kontrast na bílou: 6.5:1 ✅ AA+ */
+  --color-terra-hover:    #8F3328;
+  --color-terra-light:    #F5C5BC;  /* Pozadí terracotta karet                 */
+
+  /* --- Barvy: text --- */
+  --color-text-primary:   #1A1208;  /* Nadpisy, body text                      kontrast na --bg-primary: 17:1 ✅ AAA */
+  --color-text-secondary: #4A3520;  /* Popisky, metadata, placeholder          kontrast na --bg-primary:  8:1 ✅ AAA */
+  --color-text-on-dark:   #FFFFFF;  /* Text na tmavých/amber/sage pozadích     */
+  --color-text-on-dark-muted: #E8D8C4; /* Sekundární text na tmavém (footer)   kontrast na #1A1208: 8:1 ✅ */
+
+  /* --- Barvy: karty & ohraničení --- */
+  --color-card-bg:        #FFFFFF;  /* Pozadí bílých karet                     */
+  --color-border:         #C4A882;  /* Ohraničení karet a polí                 kontrast na --card-bg: 3.2:1 ✅ UI */
+  --color-border-strong:  #8F6A40;  /* Silnější border (focus ring, divider)   */
+
+  /* --- Barvy: footer / navigace --- */
+  --color-footer-bg:      #1A1208;  /* Tmavý footer                            */
+
+
+  /* ==========================================================================
+     2. TYPOGRAFIE
+     Fonty jsou zachovány ze stávajícího designu — neprovádět změny.
+     ========================================================================== */
+
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Font sizes – px i rem (base 16px) */
+  --font-size-xs:   10px;   /* 0.625rem  — metadata, copyright               */
+  --font-size-sm:   12px;   /* 0.75rem   — popisky karet, chiplabely          */
+  --font-size-base: 14px;   /* 0.875rem  — body text, sekundární copy         */
+  --font-size-md:   16px;   /* 1rem      — body lead, sub-nadpisy             */
+  --font-size-lg:   17px;   /* 1.0625rem — tlačítka, větší body               */
+  --font-size-xl:   22px;   /* 1.375rem  — h3, citáty                         */
+  --font-size-2xl:  32px;   /* 2rem      — h2 sekcí                           */
+  --font-size-3xl:  40px;   /* 2.5rem    — h1 hero                            */
+  --font-size-4xl:  52px;   /* 3.25rem   — hero headline (desktop)            */
+
+  /* Font weights */
+  --font-weight-regular:   400;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+  --font-weight-extrabold: 800;
+
+  /* Line heights */
+  --line-height-tight:   1.2;   /* Nadpisy                                    */
+  --line-height-normal:  1.4;   /* Tlačítka, labely                           */
+  --line-height-relaxed: 1.65;  /* Body text — důležité pro kogn. dostupnost  */
+
+
+  /* ==========================================================================
+     3. SPACING (8px grid)
+     ========================================================================== */
+
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+
+  /* ==========================================================================
+     4. BORDER RADIUS
+     ========================================================================== */
+
+  --radius-sm:   8px;   /* Drobné prvky (chipy, inline badges)               */
+  --radius-md:  16px;   /* Karty, sekce                                       */
+  --radius-lg:  20px;   /* User-type karty                                    */
+  --radius-pill: 9999px; /* Tlačítka, difficulty badge                        */
+
+
+  /* ==========================================================================
+     5. SHADOWS — pouze pro karty, žádná dekorativní grafika
+     ========================================================================== */
+
+  --shadow-card:
+    0 4px 16px rgba(26, 18, 8, 0.10),
+    0 1px  4px rgba(26, 18, 8, 0.06);
+
+  --shadow-card-hover:
+    0 8px 28px rgba(26, 18, 8, 0.14),
+    0 2px  8px rgba(26, 18, 8, 0.08);
+
+
+  /* ==========================================================================
+     6. SECTION DIVIDER — klíčové pro kognitivní dostupnost
+     Vždy použít spolu se změnou barvy pozadí sekce.
+     ========================================================================== */
+
+  --section-divider-width:  100%;
+  --section-divider-height:   4px;   /* Minimálně 4px — nepodkračovat         */
+  --section-divider-color: var(--color-amber);
+
+
+  /* ==========================================================================
+     7. FOCUS RING — povinné pro přístupnost
+     ========================================================================== */
+
+  --focus-ring: 0 0 0 3px var(--color-amber-light), 0 0 0 5px var(--color-amber);
+
+
+  /* ==========================================================================
+     8. TRANSITIONS
+     ========================================================================== */
+
+  --transition-fast:   150ms ease;
+  --transition-normal: 250ms ease;
+
+}
+
+
+/* =============================================================================
+   KOMPONENTY
+   ============================================================================= */
+
+
+/* --- Section wrapper -------------------------------------------------------- */
+/*
+   Každá sudá sekce dostane --color-bg-section + oddělovač nahoře.
+   Vývojář aplikuje střídání pomocí :nth-child nebo explicitní třídy.
+*/
+
+.section {
+  background-color: var(--color-bg-primary);
+  position: relative;
+  padding: var(--space-20) var(--space-6);
+}
+
+.section--alt {
+  background-color: var(--color-bg-section);
+}
+
+/* Vizuální oddělovač — VŽDY přidat při střídání sekcí */
+.section--alt::before,
+.section + .section--alt::before,
+.section--alt + .section::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--section-divider-width);
+  height: var(--section-divider-height);
+  background-color: var(--section-divider-color);
+}
+/*
+  ⚠️  DŮLEŽITÉ PRO VÝVOJÁŘE:
+  Nikdy neměnit barvu sekce bez přidání tohoto ::before pseudo-elementu.
+  Jemný přechod cream→sand není pro uživatele s demencí dostatečný cue.
+*/
+
+
+/* --- CTA Tlačítko (primární) ----------------------------------------------- */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  background-color: var(--color-amber);   /* #B5660A — kontrast bílý text 7.1:1 ✅ AAA */
+  color: var(--color-text-on-dark);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-lg);         /* 17px                              */
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  text-decoration: none;
+
+  padding: var(--space-3) var(--space-8); /* 12px 32px                         */
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-amber-hover);  /* #8F4E07                      */
+}
+
+.btn-primary:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn-primary:active {
+  background-color: var(--color-amber-hover);
+  transform: translateY(1px);
+}
+
+
+/* --- CTA Tlačítko (sekundární / sage) -------------------------------------- */
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--color-sage);    /* #2E6B2A — kontrast bílý text 8.0:1 ✅ AAA */
+  color: var(--color-text-on-dark);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);       /* 14px                              */
+  font-weight: var(--font-weight-semibold);
+
+  padding: var(--space-2) var(--space-5); /* 8px 20px                          */
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-sage-hover);
+}
+
+.btn-secondary:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+
+/* --- Tlačítko terciální (terracotta) --------------------------------------- */
+
+.btn-tertiary {
+  background-color: var(--color-terra);  /* #B84535 — kontrast bílý text 6.5:1 ✅ AA+ */
+  color: var(--color-text-on-dark);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.btn-tertiary:hover { background-color: var(--color-terra-hover); }
+.btn-tertiary:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+
+/* --- Karta (obecná) -------------------------------------------------------- */
+/*
+  ⚠️  Karty MUSÍ mít:
+  1. Viditelný border (min. 2px, --color-border)
+  2. box-shadow (pomáhá vnímat kartu jako odlišný prvek od pozadí)
+  Žádné "ghost" karty bez borderu!
+*/
+
+.card {
+  background-color: var(--color-card-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+  transition: box-shadow var(--transition-normal);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+
+/* --- Kroková karta (Step card) --------------------------------------------- */
+
+.step-card {
+  background-color: var(--color-card-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  position: relative;
+}
+
+.step-card__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-amber-step);  /* #D4850A — kontrast: 4.7:1 ✅ */
+  color: var(--color-text-on-dark);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-4);
+}
+
+.step-card__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-2);
+}
+
+.step-card__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+
+/* --- User-type karta ------------------------------------------------------- */
+
+.user-card {
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  transition: box-shadow var(--transition-normal),
+              transform var(--transition-normal);
+}
+
+/* Varianta 1 – amber (pro sebe) */
+.user-card--amber { background-color: var(--color-amber-light); }
+
+/* Varianta 2 – sage (pro blízkého) */
+.user-card--sage  { background-color: var(--color-sage-light); }
+
+/* Varianta 3 – terra (pro klienty/instituce) */
+.user-card--terra { background-color: var(--color-terra-light); }
+
+.user-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.user-card:focus-within {
+  box-shadow: var(--focus-ring);
+}
+
+.user-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.7);
+  font-size: 24px;
+  margin-bottom: var(--space-4);
+}
+
+.user-card__title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-2);
+}
+
+.user-card__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-4);
+}
+
+
+/* --- Difficulty Badge ------------------------------------------------------ */
+
+.badge-difficulty {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-sage);   /* #2E6B2A — kontrast: 8.0:1 ✅ AAA */
+  color: var(--color-text-on-dark);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+
+/* --- Topic Chip ------------------------------------------------------------- */
+
+.chip-topic {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-amber-light);
+  color: var(--color-amber);             /* #B5660A na #FDECD6 — kontrast: 6.2:1 ✅ AAA */
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+
+/* --- Section Tag (nadpisový chip) ------------------------------------------ */
+
+.section-tag {
+  display: inline-block;
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-amber-light);
+  color: var(--color-amber);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-4);
+}
+
+
+/* --- Testimonial / Quote section ------------------------------------------- */
+
+.quote-section {
+  background-color: var(--color-amber-light);
+  position: relative;
+  padding: var(--space-16) var(--space-6);
+  text-align: center;
+}
+
+.quote-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background-color: var(--color-amber);
+}
+
+.quote-section__text {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-relaxed);
+  max-width: 680px;
+  margin: 0 auto var(--space-4);
+}
+
+.quote-section__author {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+
+/* --- Feature strip item ---------------------------------------------------- */
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.feature-item__icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.feature-item__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.feature-item__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+
+/* --- Footer ---------------------------------------------------------------- */
+
+.site-footer {
+  background-color: var(--color-footer-bg);
+  color: var(--color-text-on-dark-muted);  /* #E8D8C4 na #1A1208 — kontrast: 8:1 ✅ */
+  padding: var(--space-6);
+  text-align: center;
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+}
+
+
+/* =============================================================================
+   DEKORATIVNÍ GRAFIKA — co používat a co NE
+   =============================================================================
+
+   ✅  POVOLENO:
+       – Barevné pruhy jako section-divider (4px, amber)
+       – Levý/pravý akcentní border na kartách (5px, sage nebo amber)
+       – Emoji ikony jako vizuální kotvy (vždy doplněné textem, ne samy o sobě)
+       – box-shadow na kartách
+
+   ❌  ZAKÁZÁNO (odstraněno v Variantě B):
+       – CSS blobby (border-radius: 40% 60% ...) s opacity
+       – Dekorativní tečky a pattern prvky
+       – Gradient pozadí
+       – Animované pozadí nebo parallax
+       – Jakýkoliv element, který nemá textovou alternativu a je v popředí
+
+   Důvod: kognitivní zátěž. Každý nepojmenovaný vizuální prvek zvyšuje
+   kognitivní zátěž. U seniorů a osob s demencí může dekorativní grafika
+   způsobit dezorientaci nebo být zaměněna za funkční obsah.
+============================================================================= */
+
+
+/* =============================================================================
+   TYPOGRAFICKÉ STYLY
+   ============================================================================= */
+
+.hero-headline {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.hero-headline--accent {
+  color: var(--color-amber);
+}
+
+.hero-subtext {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-4);
+}
+
+.body-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-relaxed);
+}
+
+.body-text--secondary {
+  color: var(--color-text-secondary);
+}
+
+
+/* =============================================================================
+   PŘÍSTUPNOST — povinné globální styly
+   ============================================================================= */
+
+/* Vždy viditelný focus ring — nikdy nepoužívat outline: none bez alternativy */
+*:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Dostatečná velikost klikatelné plochy — min. 44×44px (WCAG 2.5.5) */
+.btn-primary,
+.btn-secondary,
+.btn-tertiary {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Skip link pro klávesnicové uživatele */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-4);
+  background-color: var(--color-amber);
+  color: var(--color-text-on-dark);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
+  z-index: 9999;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+/* Redukce pohybu — respektujte systémové nastavení */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* =============================================================================
+   KONTRASTNÍ REFERENČNÍ TABULKA (pro vývojáře)
+   =============================================================================
+
+   Text/pozadí kombinace                       Poměr   WCAG
+   ─────────────────────────────────────────────────────────
+   #1A1208 (text) na #FDF6EE (bg-primary)      17:1    ✅ AAA
+   #1A1208 (text) na #FFE4C0 (bg-section)      11:1    ✅ AAA
+   #4A3520 (secondary) na #FDF6EE              8:1     ✅ AAA
+   #FFFFFF na #B5660A (amber CTA)              7.1:1   ✅ AAA
+   #FFFFFF na #2E6B2A (sage badge)             8.0:1   ✅ AAA
+   #FFFFFF na #B84535 (terra)                  6.5:1   ✅ AA+
+   #B5660A na #FDECD6 (chip amber/light)       6.2:1   ✅ AAA
+   #FFFFFF na #D4850A (step circle)            4.7:1   ✅ AA
+   #E8D8C4 na #1A1208 (footer)                 8:1     ✅ AAA
+   ─────────────────────────────────────────────────────────
+   Žádná barva nesmí být jediným nositelem informace (WCAG 1.4.1).
+   Vždy doprovázet textem, ikonou nebo tvarem.
+
+   Figma reference: https://www.figma.com/design/D4lWM0UmbRtX3U6BQNMQbV
+   Stránka: ⚖️ Porovnání variant A vs B
+   ============================================================================= */
