@@ -12,7 +12,7 @@ const adminNavItems = [
   { href: '/admin/review', icon: CheckSquare, label: 'Revize' },
   { href: '/admin/catalog', icon: Library, label: 'Katalog' },
   { href: '/admin/archive', icon: Archive, label: 'Archiv' },
-  { href: '/admin/topics', icon: FolderTree, label: 'Témata' },
+  ...(!isPrototypeMode ? [{ href: '/admin/topics', icon: FolderTree, label: 'Témata' }] : []),
   { href: '/admin/errors', icon: AlertTriangle, label: 'Chyby' },
 ]
 
