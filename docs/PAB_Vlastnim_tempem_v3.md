@@ -84,10 +84,12 @@ Na zaklade uzivatelskeho profilu (mira kognitivniho postizeni) a zvoleneho temat
 | Deployment | Vercel |
 
 **Implementacni poznamky:**
-- PDF: 12-strankovy A4 dokument, font Roboto (podpora ceske diakritiky), generovany server-side pres API route
+- PDF: 12-strankovy A4 dokument, font Inter (podpora ceske diakritiky), generovany server-side pres API route [ZMENA v3: font zmenen z Roboto na Inter, viz BL-019]
 - Databazovy trigger pouziva `SECURITY DEFINER SET search_path = public`
 - AI klienti pouzivaji lazy inicializaci (nikoliv pri importu modulu) — prevence chyb pri buildu
 - Route groups: `(auth)`, `(dashboard)`, `(admin)`
+- Sdilene komponenty: `site-header.tsx`, `site-footer.tsx` — konzistentni header/footer napric vsemi stránkami [ZMENA v4: viz BL-020]
+- Vizualni konzistence: vsechny stranky (auth, onboarding, dashboard) sdileji kremove pozadi (`--lp-bg-primary`), amber header, tmavy footer [ZMENA v4: viz BL-020]
 
 ### Source of Truth
 - Mira postizeni → odvozena z formulare, ulozena v profilu uzivatele (nebo v localStorage pred registraci) [ZMENA v2: localStorage pro onboarding, viz BL-001/BL-006]
@@ -258,13 +260,14 @@ Generovani: server-side pres API route (`@react-pdf/renderer`). [ZMENA v2: dopln
 
 ### UC0: Onboarding pruvodce (bez registrace) [ZMENA v2: novy use case, viz BL-001]
 - **Akter:** Navstevnik webu (neprihlaseny)
-- **Vstup:** Kliknuti "Zacit" na landing page
-- **Kroky:** Vyber role → Dotaznik (7 otazek, preskocen pro organizace) → Vyber tematu (filtrovano dle I8) → Generovani a stazeni PDF
-- **Vystup:** PDF sesit stazen, nabidka registrace
+- **Vstup:** Kliknuti "Zacit" na landing page (cela karta je klikatelna, ne jen tlacitko) [ZMENA v4: viz BL-021]
+- **Kroky:** Vyber role → Dotaznik (7 otazek, preskocen pro organizace) → Vyber tematu (filtrovano dle I8) → Nahled PDF → Stazeni PDF [ZMENA v4: pridan krok nahledu, viz BL-024]
+- **Vystup:** PDF sesit zobrazen jako nahled v iframe, nasledne stazen; nabidka registrace
 - **Validace:** Role vybrana, dotaznik vyplnen (pokud se nepreskakuje), tema dostupne (I8)
 - **Chybove stavy:** Zadne dostupne tema, selhani generovani PDF
 - **Side effects:** Data ulozena v localStorage (role, odpovedi, severity); zadny zaznam v DB
 - **Poznamka:** Invariant I5 relaxovan — prvni sesit bez uctu
+- **Vizualni konzistence:** Header a footer sjednoceny s landing page (amber paleta, kremove pozadi, tmavy footer) [ZMENA v4: viz BL-020]
 
 ### UC1: Registrace jednotlivce [ZMENA v2: dva paralelni flow, viz BL-006]
 - **Akter:** Pecujici osoba / Osoba s postizenim

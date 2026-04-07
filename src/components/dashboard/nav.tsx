@@ -41,12 +41,12 @@ export function DashboardNav({ profile, email }: DashboardNavProps) {
   ]
 
   return (
-    <header className="border-b bg-white sticky top-0 z-50">
+    <header className="sticky top-0 z-50" style={{ backgroundColor: 'var(--lp-card-bg)', borderBottom: '2px solid var(--lp-border)' }}>
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Brain className="h-6 w-6 text-primary" />
-            <span className="font-bold hidden sm:inline">Vlastním tempem</span>
+          <Link href="/dashboard" className="flex items-center gap-2 no-underline">
+            <Brain className="h-7 w-7" style={{ color: 'var(--lp-amber)' }} />
+            <span className="text-xl font-bold hidden sm:inline" style={{ color: 'var(--lp-text)' }}>Vlastním tempem</span>
           </Link>
           <nav className="flex items-center gap-1">
             {navItems.map((item) => (
@@ -61,7 +61,7 @@ export function DashboardNav({ profile, email }: DashboardNavProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground hidden sm:inline">
+          <span className="text-sm hidden sm:inline" style={{ color: 'var(--lp-text-secondary)' }}>
             {profile.organization_name || email.split('@')[0]}
             <span className="text-xs ml-1">({roleLabels[profile.role]})</span>
           </span>

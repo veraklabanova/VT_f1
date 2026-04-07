@@ -607,3 +607,136 @@ Kompletní redesign PDF sešitu (titulní strana, stránky s úkoly, stránka s 
 - Opacity barvy předpočítány (react-pdf nepodporuje CSS opacity na barvách)
 - Accent bary jako absolutně pozicované `<View>` elementy (react-pdf nepodporuje ::before)
 - `generate-workbook.ts` beze změn (pouze volá komponentu)
+
+---
+
+## BL-020: Sjednocení designu napříč všemi stránkami
+
+**Datum:** 2026-04-06
+**Priorita:** P1
+**Stav:** Implementováno
+
+### Popis změny
+
+**Původní stav:**
+- Landing page má vlastní design (amber paleta, krémové pozadí, tmavý footer)
+- Auth stránky (login, register, verify-email) mají generický design (bg-gray-50, bílý header, žádný footer)
+- Onboarding má vlastní header (bílý, zelený primary color) odlišný od landing page
+- Dashboard má bílé pozadí, jednoduchý header bez amber akcentů
+
+**Nový stav:**
+- Všechny stránky sdílejí stejný vizuální jazyk: krémové pozadí (`--lp-bg-primary`), amber logo, tmavý footer
+- Auth layout: přepsán na krémové pozadí, header s amber Brain ikonou, tmavý footer
+- Onboarding: header sjednocen s landing page (amber Brain ikona, `--lp-border`, amber progress bar)
+- Dashboard: krémové pozadí, header se stejným stylem, tmavý footer
+- Vytvořeny sdílené komponenty `src/components/shared/site-header.tsx` a `src/components/shared/site-footer.tsx`
+
+### Dopad na dokumentaci
+- PAB: aktualizace sekce vizuálního designu — konzistentní paleta napříč všemi stránkami
+- UAT: aktualizace vizuálních testů (auth stránky, dashboard)
+
+### Technická implementace
+- Nové komponenty: `src/components/shared/site-header.tsx`, `src/components/shared/site-footer.tsx`
+- Přepis: `src/app/(auth)/layout.tsx`, `src/app/(dashboard)/layout.tsx`, `src/components/dashboard/nav.tsx`
+- Úprava: `src/app/onboarding/page.tsx` (header + footer)
+
+---
+
+## BL-021: Celoklikatelné karty na landing page
+
+**Datum:** 2026-04-06
+**Priorita:** P2
+**Stav:** Implementováno
+
+### Popis změny
+
+**Původní stav:**
+- Karty "Začněte zdarma" na landing page mají uvnitř tlačítko "Začít →", kliknutelné je pouze tlačítko
+
+**Nový stav:**
+- Celá karta (včetně emoji, nadpisu, popisu) je obalena v `<Link>` a je plně klikatelná
+- Hover efekt: karta se mírně posune nahoru (`-translate-y-0.5`)
+- Tlačítko "Začít →" je vizuálně zachováno jako `<span>`, ale kliknout lze kamkoliv
+
+### Dopad na dokumentaci
+- UAT: aktualizace testu TC-15.01 — kliknutí na kartu (ne jen tlačítko) naviguje na onboarding
+
+### Technická implementace
+- `src/app/page.tsx`: `<div>` s vnitřním `<Link><button>` nahrazeno `<Link>` obalující celou kartu
+
+---
+
+## BL-022: Úprava textací — Feature strip a footer
+
+**Datum:** 2026-04-06
+**Priorita:** P2
+**Stav:** Implementováno
+
+### Popis změny
+
+**Feature strip — "Příjemné prostředí":**
+- Původní: „Klidný, přehledný design navržený přímo pro seniory a jejich rodiny."
+- Nový: „Klidný, přehledný design."
+
+**Footer:**
+- Původní: „© 2026 Vlastním tempem, z.s. — Kognitivní trénink vlastním tempem"
+- Nový: „© 2026 — Kognitivní trénink"
+
+### Dopad na dokumentaci
+- Žádný dopad na PAB — jedná se o drobné textové úpravy
+
+---
+
+## BL-023: Celoklikatelné bloky odpovědí v onboarding dotazníku
+
+**Datum:** 2026-04-06
+**Priorita:** P1
+**Stav:** Implementováno
+
+### Popis změny
+
+**Původní stav (BL-009):**
+- Odpovědi v dotazníku jsou klikatelné `<label>` bloky s primary/green zvýrazněním při výběru
+- Styly: `border-primary bg-primary/10` (zelený styl z dashboard palety)
+
+**Nový stav:**
+- Bloky odpovědí sjednoceny s landing page paletou: amber zvýraznění při výběru
+- Vybraná odpověď: pozadí `--lp-amber-light`, border `--lp-amber`, tučný text
+- Nevybraná odpověď: pozadí `--lp-card-bg`, border `--lp-border`, hover efekt
+- Min. výška 56px, `select-none` pro lepší UX
+- Celý blok je klikatelný (zachováno z BL-009)
+
+### Dopad na dokumentaci
+- UAT: aktualizace TC-3.01 a TC-3.02 — aktivní stav odpovědi je nyní amber (ne zelený)
+
+### Technická implementace
+- `src/app/onboarding/page.tsx`: inline styles s `--lp-*` proměnnými místo Tailwind utility tříd
+
+---
+
+## BL-024: Náhled PDF sešitu před stažením
+
+**Datum:** 2026-04-06
+**Priorita:** P1
+**Stav:** Implementováno
+
+### Popis změny
+
+**Původní stav:**
+- Na download stránce onboardingu uživatel vidí metadata sešitu (téma, obtížnost, formát) a tlačítko "Stáhnout"
+- Po kliknutí se PDF rovnou stáhne — žádný náhled
+
+**Nový stav:**
+- Tlačítko "Zobrazit náhled sešitu" nejprve vygeneruje PDF a zobrazí ho v iframe
+- Iframe s náhledem: 500px výška, zaoblený rámec s amber hlavičkou ("Náhled sešitu" + ikona FileText)
+- Pod náhledem tlačítko "Stáhnout sešit do počítače" (pro jednotlivce) / "Stáhnout všechny sešity" (pro organizace)
+- Pro organizace se zobrazuje náhled prvního sešitu (lehká obtížnost), stahují se všechny 3
+
+### Dopad na dokumentaci
+- PAB: aktualizace UC0 a UC5 — přidán krok náhledu PDF před stažením
+- UAT: aktualizace TC-4.01 — nový krok: zobrazení náhledu před stažením
+
+### Technická implementace
+- `src/app/onboarding/page.tsx`: nové stavy `pdfPreviewUrl`, `pdfBlobs`
+- Dvoustupňový flow: `handleGeneratePreview()` → iframe náhled → `handleDownloadAll()` → stažení
+- PDF blob uložen v paměti, reuse při stahování (bez opakovaného generování)
