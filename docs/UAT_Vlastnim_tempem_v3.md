@@ -139,7 +139,7 @@
 | 2 | Ověřte úvodní text | Zobrazí se: „Pokud je to možné, vyplňte tento formulář společně s blízkou osobou nebo pečovatelem…" |
 | 3 | Ověřte nadpis dotazníku | Nadpis: „Pojďme zjistit, co vám bude nejlépe vyhovovat" [ZMĚNA v3: nový nadpis, viz BL-011] |
 | 4 | Zodpovězte všech 7 otázek (5 dimenzí: paměť, orientace, pozornost, jazyk, samostatnost) | Každá otázka nabízí 3 odpovědi formou klikatelných blokových karet (ne klasických radio buttonů). Kliknutí kamkoliv na text/rámeček vybere odpověď [ZMĚNA v3: blokové karty, viz BL-009] |
-| 5 | Ověřte aktivní stav vybrané odpovědi | Vybraná odpověď má zelený rámeček (2px), světle zelené pozadí, ikonu fajfky a tučný text [ZMĚNA v3: nový aktivní stav, viz BL-009] |
+| 5 | Ověřte aktivní stav vybrané odpovědi | Vybraná odpověď má amber rámeček (2px, `--lp-amber`), světle amber pozadí (`--lp-amber-light`), ikonu fajfky a tučný text [ZMĚNA v4: amber paleta místo zelené, viz BL-023] |
 | 6 | Odešlete formulář | Systém vyhodnotí průměr odpovědí, přiřadí míru postižení (lehká/střední/těžší) a uloží do profilu uživatele |
 
 #### TC-3.02: Vyplnění formuláře — role Osoba s postižením (varianta A, 1. osoba) (High) [ZMĚNA v3]
@@ -208,9 +208,10 @@
 |------|------|--------------------|
 | 1 | Po vyplnění formuláře přejděte na výběr tématu | Zobrazí se nadpis „O čem si chcete číst a přemýšlet?" [ZMĚNA v3: nový nadpis, viz BL-011]. Dostupná témata jsou klikatelná. Nedostupná témata (nesplňující I8) mají opacity 0.4, žádná falešná tlačítka, pouze text kurzívou „Připravujeme" [ZMĚNA v3: redesign nedostupných karet, viz BL-009] |
 | 2 | Ověřte banner míry obtížnosti | Banner zobrazuje zelený informační box s ikonou fajfky a textem: „Výborně, máme to! Podle vašich odpovědí jsme pro vás připravili cvičení s obtížností: [míra]." [ZMĚNA v3: nový design banneru, viz BL-009/BL-011] |
-| 3 | Vyberte dostupné téma | Systém zahájí generování sešitu |
-| 4 | Počkejte na dokončení generování | Systém sestaví PDF sešit: 12 stran (titulní + 10 úkolů + instrukce), formát A4, UTF-8 |
-| 5 | Stáhněte sešit tlačítkem „Stáhnout můj první sešit (zdarma)" [ZMĚNA v3: nový text tlačítka, viz BL-011] | Sešit se stáhne zdarma (freemium — první sešit). Zobrazí se text „Sešit se stahuje k vám do počítače." [ZMĚNA v3: nový text po stažení, viz BL-011]. Pod tlačítkem je fallback odkaz „Pokud stahování nezačalo, klikněte zde" [NOVÉ v3: viz BL-009] |
+| 3 | Vyberte dostupné téma | Přejde se na download stránku s informacemi o sešitu |
+| 4 | Klikněte na tlačítko „Zobrazit náhled sešitu" [ZMĚNA v4: nový dvoustupňový flow, viz BL-024] | Systém vygeneruje PDF a zobrazí jeho náhled v iframe (500px výška, amber hlavička s ikonou „Náhled sešitu") |
+| 5 | Zkontrolujte náhled | Náhled zobrazuje titulní stranu a umožňuje listování sešitem přímo v prohlížeči [NOVÉ v4: viz BL-024] |
+| 6 | Stáhněte sešit tlačítkem „Stáhnout sešit do počítače" [ZMĚNA v4: nový text, viz BL-024] | Sešit se stáhne zdarma (freemium — první sešit). Zobrazí se text „Sešit se stahuje k vám do počítače." [ZMĚNA v3: viz BL-011] |
 
 #### TC-4.02: Struktura PDF sešitu (High)
 
@@ -557,9 +558,9 @@
 | Krok | Akce | Očekávaný výsledek |
 |------|------|--------------------|
 | 1 | Otevřete landing page | H1 nadpis: „Trénujte paměť a myšlení. V klidu a vlastním tempem." [ZMĚNA v3: nový nadpis, viz BL-011]. Podnadpis bez termínu „kognitivní postižení" [ZMĚNA v3: empatický tón, viz BL-011]. Zobrazí se 3 karty: „Chci trénovat svou paměť", „Hledám sešit pro někoho blízkého", „Jsme organizace" [ZMĚNA v3: nové texty karet, viz BL-011]. V hlavičce je tlačítko „Přihlásit se" |
-| 2 | Klikněte na kartu „Chci trénovat svou paměť" (tlačítko „Začít") [ZMĚNA v3: nový text] | Spustí se onboarding průvodce na `/onboarding?role=osoba_s_postizenim` (NEvede na registraci) |
-| 3 | Klikněte na kartu „Hledám sešit pro někoho blízkého" (tlačítko „Začít") [ZMĚNA v3: nový text] | Spustí se onboarding průvodce na `/onboarding?role=pecujici` |
-| 4 | Klikněte na kartu „Jsme organizace" (tlačítko „Začít") | Spustí se onboarding průvodce na `/onboarding?role=organizace` |
+| 2 | Klikněte kamkoliv na kartu „Chci trénovat svou paměť" (celá karta je klikatelná, ne jen tlačítko) [ZMĚNA v4: celoklikatelné karty, viz BL-021] | Spustí se onboarding průvodce na `/onboarding?role=osoba_s_postizenim` (NEvede na registraci) |
+| 3 | Klikněte kamkoliv na kartu „Hledám sešit pro někoho blízkého" [ZMĚNA v4: celoklikatelná] | Spustí se onboarding průvodce na `/onboarding?role=pecujici` |
+| 4 | Klikněte kamkoliv na kartu „Jsme organizace" [ZMĚNA v4: celoklikatelná] | Spustí se onboarding průvodce na `/onboarding?role=organizace` |
 | 5 | Klikněte na „Přihlásit se" v hlavičce | Otevře se přihlašovací stránka `/login` |
 | 6 | Na přihlašovací stránce klikněte na „Zaregistrujte se" | Otevře se registrační stránka `/register` (přímá registrace — Flow A) |
 
@@ -583,11 +584,11 @@
 |------|------|--------------------|
 | 1 | Na landing page klikněte na kartu „Hledám sešit pro někoho blízkého" [ZMĚNA v3: nový text karty] | Spustí se onboarding průvodce. Krok 1: Výběr role (předvyplněna role „pečující") |
 | 2 | Potvrďte roli a přejděte na krok 2 | Zobrazí se dotazník ve variantě B (3. osoba), 7 otázek. Nadpis: „Pojďme zjistit, co vám bude nejlépe vyhovovat" [ZMĚNA v3: nový nadpis, viz BL-011]. Odpovědi jsou formou klikatelných blokových karet [ZMĚNA v3: viz BL-009]. Progress bar zobrazuje „Krok X z Y" [ZMĚNA v3: viz BL-009] |
-| 3 | Zodpovězte všech 7 otázek | Každá otázka nabízí 3 odpovědi na škále 1–3 formou blokových karet. Aktivní odpověď: zelený rámeček + světle zelené pozadí + ikona fajfky + tučný text [ZMĚNA v3: viz BL-009] |
+| 3 | Zodpovězte všech 7 otázek | Každá otázka nabízí 3 odpovědi na škále 1–3 formou blokových karet. Aktivní odpověď: amber rámeček (`--lp-amber`) + amber pozadí (`--lp-amber-light`) + ikona fajfky + tučný text [ZMĚNA v4: amber paleta, viz BL-023] |
 | 4 | Odešlete dotazník a přejděte na krok 3 | Zobrazí se výběr tématu s nadpisem „O čem si chcete číst a přemýšlet?" [ZMĚNA v3: nový nadpis, viz BL-011]. Banner: „Výborně, máme to! Podle vašich odpovědí..." [ZMĚNA v3: viz BL-011]. Dostupná témata mají stín a tlačítko „Vybrat". Nedostupná témata mají opacity 0.4 a text kurzívou „Připravujeme", NEJSOU klikatelná, žádná falešná tlačítka [ZMĚNA v3: redesign, viz BL-009] |
 | 5 | Vyberte dostupné téma | Systém zahájí generování sešitu |
-| 6 | Počkejte na dokončení generování | Krok 4: Zobrazí se text „Skvělé, váš sešit je připraven!" [ZMĚNA v3: viz BL-011] a zvětšené CTA tlačítko s ikonou „Stáhnout můj první sešit (zdarma)" [ZMĚNA v3: viz BL-009/BL-011]. Štítek „Zdarma" je světle zelený textový tag [ZMĚNA v3: viz BL-009] |
-| 7 | Stáhněte sešit | Sešit se stáhne ZDARMA bez registrace. Zobrazí se text „Sešit se stahuje k vám do počítače." [ZMĚNA v3: viz BL-011]. Pod CTA je fallback odkaz „Pokud stahování nezačalo, klikněte zde" [NOVÉ v3: viz BL-009]. Po stažení se zobrazí nabídka registrace: „Uložit výsledek a vytvořit bezplatný účet" [ZMĚNA v3: viz BL-011] |
+| 6 | Klikněte na „Zobrazit náhled sešitu" a počkejte na generování | Krok 4: Zobrazí se text „Skvělé, váš sešit je připraven!" [ZMĚNA v3: viz BL-011]. Po vygenerování se zobrazí náhled PDF v iframe s amber hlavičkou „Náhled sešitu" [ZMĚNA v4: dvoustupňový flow s náhledem, viz BL-024] |
+| 7 | Zkontrolujte náhled a klikněte na „Stáhnout sešit do počítače" [ZMĚNA v4: viz BL-024] | Sešit se stáhne ZDARMA bez registrace. Zobrazí se text „Sešit se stahuje k vám do počítače." [ZMĚNA v3: viz BL-011]. Po stažení se zobrazí nabídka registrace: „Uložit výsledek a vytvořit bezplatný účet" [ZMĚNA v3: viz BL-011] |
 
 #### TC-16.02: Onboarding — kompletní flow pro osobu s postižením (High) [ZMĚNA v3]
 
@@ -840,7 +841,7 @@
 | AK-S19 | Archivované úkoly lze obnovit zpět do fronty revize (BL-002) [NOVÉ v2] |
 | AK-S20 | Onboarding výběr tématu zobrazuje dostupnost: dostupná témata mají stín + „Vybrat", nedostupná mají opacity 0.4 + kurzíva „Připravujeme", žádná falešná tlačítka, nejsou klikatelná (BL-008, BL-009) [ZMĚNA v3: aktualizovaný design] |
 | AK-S21 | Admin dashboard NEOBSAHUJE dotazník/assessment kartu pro admin roli [NOVÉ v2] |
-| AK-S22 | Dotazník používá klikatelné blokové karty místo klasických radio buttonů; aktivní stav: zelený rámeček + světle zelené pozadí + ikona fajfky + tučný text (BL-009) [NOVÉ v3] |
+| AK-S22 | Dotazník používá klikatelné blokové karty místo klasických radio buttonů; aktivní stav: amber rámeček + amber pozadí + ikona fajfky + tučný text (BL-009, BL-023) [ZMĚNA v4: amber paleta] |
 | AK-S23 | Progress bar v dotazníku zobrazuje badge „Krok X z Y" (BL-009) [NOVÉ v3] |
 | AK-S24 | Tlačítko Zpět v dotazníku je zvětšené outline tlačítko (BL-009) [NOVÉ v3] |
 | AK-S25 | Banner míry obtížnosti je zelený informační box s ikonou fajfky a empatickým textem (BL-009, BL-011) [NOVÉ v3] |
@@ -849,6 +850,10 @@
 | AK-S28 | Karty: border-radius 16px, box-shadow: 0 10px 25px rgba(0,0,0,0.05); tlačítka: border-radius 999px (BL-010) [NOVÉ v3] |
 | AK-S29 | Fallback odkaz „Pokud stahování nezačalo, klikněte zde" pod CTA tlačítkem stažení (BL-009) [NOVÉ v3] |
 | AK-S30 | Štítek „Zdarma" je světle zelený textový tag, ne černá badge (BL-009) [NOVÉ v3] |
+| AK-S31 | Všechny stránky (auth, onboarding, dashboard) sdílejí konzistentní vizuální jazyk: krémové pozadí (`--lp-bg-primary`), amber header s Brain ikonou, tmavý footer (BL-020) [NOVÉ v4] |
+| AK-S32 | Karty „Začněte zdarma" na landing page jsou celoklikatelné — kliknutí kamkoliv na kartu naviguje na onboarding (BL-021) [NOVÉ v4] |
+| AK-S33 | Footer zobrazuje „© {rok} — Kognitivní trénink" (BL-022) [NOVÉ v4] |
+| AK-S34 | Na download stránce se před stažením zobrazí náhled PDF sešitu v iframe s amber hlavičkou (BL-024) [NOVÉ v4] |
 
 ---
 
@@ -877,8 +882,8 @@
 
 ---
 
-*Dokument vygenerován: 2026-04-04*
-*Verze: v3.0 (aktualizováno dle BACKLOG.md, BL-001 až BL-011)*
+*Dokument vygenerován: 2026-04-04, aktualizace 2026-04-06*
+*Verze: v3.1 (aktualizováno dle BACKLOG.md, BL-001 až BL-024)*
 *Vstup: PAB_Vlastnim_tempem_v2.md (PAB v2), PAB_Vlastnim_tempem_v3.md (PAB v3), BACKLOG.md*
 *Formát testů: Klasický (Krok — Akce — Očekávaný výsledek)*
 *Doména: HealthTech / SocialTech — kognitivní rehabilitace*

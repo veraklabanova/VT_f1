@@ -31,7 +31,9 @@ MVP deployed and functional on Vercel. All core features working end-to-end.
 - `src/lib/pdf/` — PDF generation (workbook-document.tsx: Inter font, warm palette, accent bars, answer lines + generate-workbook.ts)
 - `src/lib/stripe/` — Stripe client (lazy init)
 - `src/middleware.ts` — Auth guard and role routing (admin paths pass through for demo mode)
-- `src/app/onboarding/page.tsx` — Main user-facing onboarding wizard
+- `src/app/onboarding/page.tsx` — Main user-facing onboarding wizard (PDF preview, amber questionnaire)
+- `src/components/shared/site-header.tsx` — Shared header (amber logo, consistent across all pages)
+- `src/components/shared/site-footer.tsx` — Shared dark footer (consistent across all pages)
 
 ## Architecture
 - Route groups: (auth), (dashboard), (admin)
@@ -56,7 +58,7 @@ MVP deployed and functional on Vercel. All core features working end-to-end.
 - Function: `mapSeverityToDifficulty()` in `src/lib/assessment/evaluate.ts`
 
 ## Backlog (docs/BACKLOG.md)
-BL-001 through BL-019 tracked. Key items:
+BL-001 through BL-024 tracked. Key items:
 - BL-001: Onboarding without registration
 - BL-006: Dual registration flows + localStorage data transfer
 - BL-009: A11y redesign (a11y-theme, card radio buttons, enlarged UI)
@@ -69,6 +71,11 @@ BL-001 through BL-019 tracked. Key items:
 - BL-016: **Fixed** organization download flow
 - BL-018: Landing page redesign (Varianta B, WCAG AAA)
 - BL-019: PDF layout redesign (warm palette, accent bars, answer lines)
+- BL-020: Design unification across all pages (shared header/footer, cream bg)
+- BL-021: Fully clickable cards on homepage ("Začněte zdarma" section)
+- BL-022: Text updates (feature strip + footer copyright)
+- BL-023: Amber-themed clickable answer blocks in onboarding questionnaire
+- BL-024: PDF preview before download (iframe with amber header)
 
 ## What's NOT done yet (future work)
 - 3 more themes need content (Dům, Jaro, Domácí práce)

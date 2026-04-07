@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { isPrototypeMode } from '@/lib/prototype'
 import Link from 'next/link'
 import { Brain, LayoutDashboard, Wand2, CheckSquare, Library, FolderTree, AlertTriangle, Shield, Archive, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -16,27 +17,27 @@ const adminNavItems = [
 ]
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  let isDemo = false
+  let isDemo = isPrototypeMode
 
-  try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (!isDemo) {
+    try {
+      const supabase = await createClient()
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (authError || !user) {
-      // No Supabase connection or not logged in → demo mode
+      if (authError || !user) {
+        isDemo = true
+      } else {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+
+        if (profile?.role !== 'admin') redirect('/dashboard')
+      }
+    } catch {
       isDemo = true
-    } else {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-
-      if (profile?.role !== 'admin') redirect('/dashboard')
     }
-  } catch {
-    // Supabase unavailable → demo mode
-    isDemo = true
   }
 
   return (

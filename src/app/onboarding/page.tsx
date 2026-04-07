@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ASSESSMENT_QUESTIONS, computeSeverity, mapSeverityToDifficulty } from '@/lib/assessment/evaluate'
+import { CoverPreview } from '@/components/workbook/cover-preview'
+import { isPrototypeMode } from '@/lib/prototype'
 import type { UserRole, SeverityLevel } from '@/types'
 
 const TOTAL_STEPS_INDIVIDUAL = 4 // role → assessment → theme → download
@@ -67,6 +69,7 @@ export default function OnboardingPage() {
   const [generating, setGenerating] = useState(false)
   const [downloaded, setDownloaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [protoMessage, setProtoMessage] = useState(false)
 
   const isOrg = role === 'organizace'
   const isFirstPerson = role === 'osoba_s_postizenim'
@@ -173,17 +176,14 @@ export default function OnboardingPage() {
 
     try {
       if (isOrg) {
-        // Organizations: generate all 3 difficulty levels
         for (const diff of ['lehka', 'stredni', 'tezsi'] as const) {
           await downloadPdf(selectedTheme, diff, diff)
         }
       } else {
-        // Individuals: map severity to exercise difficulty (inverse)
         if (!severity) return
         const exerciseDifficulty = mapSeverityToDifficulty(severity)
         await downloadPdf(selectedTheme, exerciseDifficulty, exerciseDifficulty)
       }
-
       setDownloaded(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Chyba při generování')
@@ -195,13 +195,13 @@ export default function OnboardingPage() {
   const stepProgress = Math.round(((step + 1) / totalSteps) * 100)
 
   return (
-    <div className={`min-h-screen bg-background ${isFirstPerson ? 'simplified-mode a11y-theme' : ''}`}>
-      {/* Header — fixed at top */}
-      <header className="border-b bg-white px-4 py-3 fixed top-0 left-0 right-0 z-50">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Brain className="h-6 w-6 text-primary" />
-            <span className="font-bold">Vlastním tempem</span>
+    <div className={`min-h-screen flex flex-col ${isFirstPerson ? 'simplified-mode a11y-theme' : ''}`} style={{ backgroundColor: 'var(--lp-bg-primary)', fontFamily: 'var(--font-nunito, var(--font-sans))' }}>
+      {/* Header — fixed at top, matching landing page design */}
+      <header className="fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: 'var(--lp-card-bg)', borderBottom: '2px solid var(--lp-border)' }}>
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 no-underline">
+            <Brain className="h-7 w-7" style={{ color: 'var(--lp-amber)' }} />
+            <span className="text-xl font-bold" style={{ color: 'var(--lp-text)' }}>Vlastním tempem</span>
           </Link>
           {step > 0 && (
             <Badge variant="secondary" className="text-sm px-3 py-1">
@@ -210,18 +210,18 @@ export default function OnboardingPage() {
           )}
         </div>
         {/* Progress bar */}
-        <div className="h-1 bg-gray-200 -mx-4 -mb-3 mt-3">
+        <div className="h-1" style={{ backgroundColor: 'var(--lp-border)' }}>
           <div
-            className="h-1 bg-primary transition-all duration-300"
-            style={{ width: `${stepProgress}%` }}
+            className="h-1 transition-all duration-300"
+            style={{ width: `${stepProgress}%`, backgroundColor: 'var(--lp-amber)' }}
           />
         </div>
       </header>
 
       {/* Spacer for fixed header */}
-      <div className="h-14" />
+      <div className="h-[4.5rem]" />
 
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      <main className="max-w-3xl mx-auto px-4 py-8 flex-1">
 
         {/* Step 0: Role selection */}
         {stepName === 'role' && (
@@ -285,10 +285,15 @@ export default function OnboardingPage() {
                     {question.options.map((option) => (
                       <label
                         key={option.value}
-                        className={`flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all
+                        className={`flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all select-none
                           ${answers[question.id] === option.value
-                            ? 'border-primary bg-primary/10 shadow-md'
-                            : 'border-transparent bg-white hover:bg-gray-50 shadow-sm'}`}
+                            ? 'shadow-md'
+                            : 'hover:shadow-md hover:-translate-y-px'}`}
+                        style={{
+                          backgroundColor: answers[question.id] === option.value ? 'var(--lp-amber-light)' : 'var(--lp-card-bg)',
+                          borderColor: answers[question.id] === option.value ? 'var(--lp-amber)' : 'var(--lp-border)',
+                          minHeight: '56px',
+                        }}
                       >
                         <input
                           type="radio"
@@ -298,13 +303,18 @@ export default function OnboardingPage() {
                           onChange={() => setAnswers((prev) => ({ ...prev, [question.id]: option.value }))}
                           className="sr-only"
                         />
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0
-                          ${answers[question.id] === option.value ? 'border-primary bg-primary' : 'border-gray-300'}`}>
+                        <div
+                          className="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0"
+                          style={{
+                            borderColor: answers[question.id] === option.value ? 'var(--lp-amber)' : 'var(--lp-border)',
+                            backgroundColor: answers[question.id] === option.value ? 'var(--lp-amber)' : 'transparent',
+                          }}
+                        >
                           {answers[question.id] === option.value && (
                             <CheckCircle className="h-4 w-4 text-white" />
                           )}
                         </div>
-                        <span className={`text-base ${answers[question.id] === option.value ? 'font-semibold' : ''}`}>
+                        <span className={`text-base ${answers[question.id] === option.value ? 'font-semibold' : ''}`} style={{ color: 'var(--lp-text)' }}>
                           {isFirstPerson ? option.label_first_person : option.label_third_person}
                         </span>
                       </label>
@@ -387,63 +397,79 @@ export default function OnboardingPage() {
 
         {/* Download / Result */}
         {stepName === 'download' && (
-          <div className="space-y-6 max-w-lg mx-auto text-center">
+          <div className="space-y-6 max-w-2xl mx-auto text-center">
             {!downloaded ? (
               <>
                 <div>
-                  <h1 className="text-3xl font-bold">Skvělé, váš sešit je připraven!</h1>
-                  <p className="text-muted-foreground mt-2">
+                  <h1 className="text-3xl font-bold" style={{ color: 'var(--lp-text)' }}>Skvělé, váš sešit je připraven!</h1>
+                  <p className="mt-2" style={{ color: 'var(--lp-text-secondary)' }}>
                     {isOrg
                       ? 'Vygenerujeme 3 pracovní sešity (lehká, střední, těžší obtížnost).'
                       : `Pracovní sešit na obtížnosti „${severity ? severityLabels[severity] : ''}" je připraven ke stažení.`}
                   </p>
                 </div>
 
-                <Card>
-                  <CardContent className="py-8">
-                    <div className="space-y-4">
-                      <div className="text-sm text-muted-foreground">
-                        <p>Téma: <strong>{themes.find((t) => t.id === selectedTheme)?.name}</strong></p>
-                        {severity && <p>Obtížnost: <strong>{severityLabels[severity]}</strong></p>}
-                        <p>Formát: PDF, 12 stran, 10 cvičení</p>
-                      </div>
+                {/* Cover preview */}
+                <CoverPreview
+                  themeName={themes.find((t) => t.id === selectedTheme)?.name || ''}
+                  difficultyLabel={severity ? severityLabels[severity] : isOrg ? 'Lehká / Střední / Těžší' : ''}
+                />
 
-                      <span className="inline-block text-green-700 bg-green-100 text-sm font-medium px-3 py-1 rounded-full">
-                        Zdarma
-                      </span>
+                <div className="space-y-3 max-w-md mx-auto">
+                  <span className="inline-block text-sm font-medium px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--lp-sage-light)', color: 'var(--lp-sage)' }}>
+                    Zdarma
+                  </span>
 
-                      <Button
-                        onClick={handleGenerate}
-                        disabled={generating}
-                        size="lg"
-                        className="w-full gap-2 text-lg py-6"
-                      >
-                        {generating ? (
-                          <><Loader2 className="h-6 w-6 animate-spin" /> {isOrg ? 'Generuji sešity...' : 'Generuji sešit...'}</>
-                        ) : (
-                          <><Download className="h-6 w-6" /> {isOrg ? 'Stáhnout sešity ve třech obtížnostech (zdarma)' : 'Stáhnout můj první sešit (zdarma)'}</>
-                        )}
-                      </Button>
-                      {error && (
-                        <Alert variant="destructive">
-                          <AlertDescription>{error}</AlertDescription>
-                        </Alert>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        Pokud stahování nezačalo, <button onClick={handleGenerate} className="underline text-primary">klikněte zde</button>.
+                  <Button
+                    onClick={() => {
+                      if (isPrototypeMode) {
+                        setProtoMessage(true)
+                        return
+                      }
+                      handleGenerate()
+                    }}
+                    disabled={generating}
+                    size="lg"
+                    className="w-full gap-2 text-lg py-6"
+                  >
+                    {generating ? (
+                      <><Loader2 className="h-6 w-6 animate-spin" /> {isOrg ? 'Generuji sešity...' : 'Generuji sešit...'}</>
+                    ) : (
+                      <><Download className="h-6 w-6" /> {isOrg ? 'Stáhnout sešity ve třech obtížnostech (zdarma)' : 'Stáhnout můj první sešit (zdarma)'}</>
+                    )}
+                  </Button>
+
+                  {protoMessage && (
+                    <div className="p-4 rounded-2xl text-sm text-center" style={{ backgroundColor: 'var(--lp-amber-light)', border: '2px solid var(--lp-amber)', color: 'var(--lp-text)' }}>
+                      <p className="font-semibold mb-1">Toto je ukázkový prototyp</p>
+                      <p style={{ color: 'var(--lp-text-secondary)' }}>
+                        Stahování sešitů není v prototypové verzi k dispozici.
+                        V plné verzi aplikace se zde vygeneruje PDF sešit s 10 cvičeními na míru.
                       </p>
                     </div>
-                  </CardContent>
-                </Card>
+                  )}
+
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  {!isPrototypeMode && (
+                    <p className="text-xs" style={{ color: 'var(--lp-text-secondary)' }}>
+                      Pokud stahování nezačalo, <button onClick={handleGenerate} className="underline" style={{ color: 'var(--lp-amber)' }}>klikněte zde</button>.
+                    </p>
+                  )}
+                </div>
               </>
             ) : (
               <>
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                  <CheckCircle className="h-10 w-10 text-green-600" />
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto" style={{ backgroundColor: 'var(--lp-sage-light)' }}>
+                  <CheckCircle className="h-10 w-10" style={{ color: 'var(--lp-sage)' }} />
                 </div>
 
-                <h1 className="text-3xl font-bold">Sešit se stahuje k vám do počítače.</h1>
-                <p className="text-muted-foreground">
+                <h1 className="text-3xl font-bold" style={{ color: 'var(--lp-text)' }}>Sešit se stahuje k vám do počítače.</h1>
+                <p style={{ color: 'var(--lp-text-secondary)' }}>
                   Můžete si ho rovnou vytisknout a v klidu se pustit do cvičení.
                   Líbí se vám náš přístup? Uložte si dnešní výsledek a získejte přístup k dalším krásným tématům.
                 </p>
@@ -461,7 +487,7 @@ export default function OnboardingPage() {
                   </Link>
                 </div>
 
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm" style={{ color: 'var(--lp-text-secondary)' }}>
                   S účtem získáte historii sešitů, přístup ke všem tématům a možnost generovat neomezené množství materiálů.
                 </p>
               </>
@@ -469,6 +495,14 @@ export default function OnboardingPage() {
           </div>
         )}
       </main>
+
+      {/* Footer — matching landing page */}
+      <div className="h-1" style={{ backgroundColor: 'var(--lp-divider)' }} />
+      <footer className="py-6 px-4 text-center" style={{ backgroundColor: 'var(--lp-footer-bg)' }}>
+        <p className="text-xs" style={{ color: 'var(--lp-text-on-dark-muted)' }}>
+          &copy; {new Date().getFullYear()} — Kognitivní trénink
+        </p>
+      </footer>
     </div>
   )
 }

@@ -154,9 +154,10 @@ export default function Home() {
               { emoji: '💚', bg: 'var(--lp-sage-light)', title: 'Hledám sešit pro blízkého', desc: 'Chci pomoci s tréninkem paměti někomu v rodině.', href: '/onboarding?role=pecujici' },
               { emoji: '🧡', bg: 'var(--lp-terra-light)', title: 'Hledáme materiály pro klienty', desc: 'Pro domovy seniorů a centra.', href: '/onboarding?role=organizace' },
             ].map((card) => (
-              <div
+              <Link
                 key={card.title}
-                className="p-5 transition-all"
+                href={card.href}
+                className="block p-5 transition-all hover:-translate-y-0.5 no-underline"
                 style={{
                   backgroundColor: card.bg,
                   border: '2px solid var(--lp-border)',
@@ -176,21 +177,18 @@ export default function Home() {
                 <p className="text-sm mb-4" style={{ color: 'var(--lp-text-secondary)', lineHeight: 1.65 }}>
                   {card.desc}
                 </p>
-                <Link href={card.href}>
-                  <button
-                    className="px-5 py-2 text-sm font-semibold"
-                    style={{
-                      backgroundColor: 'var(--lp-sage)',
-                      color: 'var(--lp-text-on-dark)',
-                      borderRadius: '9999px',
-                      border: 'none',
-                      minHeight: '36px',
-                    }}
-                  >
-                    Začít &rarr;
-                  </button>
-                </Link>
-              </div>
+                <span
+                  className="inline-block px-5 py-2 text-sm font-semibold"
+                  style={{
+                    backgroundColor: 'var(--lp-sage)',
+                    color: 'var(--lp-text-on-dark)',
+                    borderRadius: '9999px',
+                    minHeight: '36px',
+                  }}
+                >
+                  Začít &rarr;
+                </span>
+              </Link>
             ))}
           </div>
         </div>
@@ -206,7 +204,7 @@ export default function Home() {
             {[
               { emoji: '📚', title: 'Sestavené odborníky', desc: 'Cvičení cílí na paměť, pozornost, orientaci a logické myšlení.' },
               { emoji: '🎯', title: 'Přizpůsobená obtížnost', desc: 'Tři úrovně zajistí, že materiály odpovídají aktuálním schopnostem.' },
-              { emoji: '🌿', title: 'Příjemné prostředí', desc: 'Klidný, přehledný design navržený přímo pro seniory a jejich rodiny.' },
+              { emoji: '🌿', title: 'Příjemné prostředí', desc: 'Klidný, přehledný design.' },
               { emoji: '🖨️', title: 'Tisk doma', desc: 'Stačí tiskárna. Žádná aplikace, žádné přihlašování, žádný stres.' },
             ].map((feature) => (
               <div key={feature.title} className="flex gap-4">
@@ -273,7 +271,7 @@ export default function Home() {
       {/* ═══════════════ DARK FOOTER ═══════════════ */}
       <footer className="py-6 px-4 text-center" style={{ backgroundColor: 'var(--lp-footer-bg)' }}>
         <p className="text-xs" style={{ color: 'var(--lp-text-on-dark-muted)' }}>
-          &copy; {new Date().getFullYear()} Vlastním tempem, z.s. — Kognitivní trénink vlastním tempem
+          &copy; {new Date().getFullYear()} — Kognitivní trénink
         </p>
       </footer>
     </div>

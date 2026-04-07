@@ -3,9 +3,17 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 const publicPaths = ['/', '/login', '/register', '/verify-email', '/auth/callback', '/onboarding']
 
+// Prototype mode: bypass all auth checks
+const isPrototypeMode = process.env.NEXT_PUBLIC_PROTOTYPE_MODE === 'true'
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
   const path = request.nextUrl.pathname
+
+  // Prototype mode: allow everything through, demo context handles "auth"
+  if (isPrototypeMode) {
+    return supabaseResponse
+  }
 
   // Public paths: always allow
   if (publicPaths.some((p) => path === p)) {
