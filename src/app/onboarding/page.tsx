@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ASSESSMENT_QUESTIONS, computeSeverity, mapSeverityToDifficulty } from '@/lib/assessment/evaluate'
 import { CoverPreview } from '@/components/workbook/cover-preview'
 import { isPrototypeMode } from '@/lib/prototype'
+import { DemoSwitcher } from '@/components/demo/demo-switcher'
 import type { UserRole, SeverityLevel } from '@/types'
 
 const TOTAL_STEPS_INDIVIDUAL = 4 // role → assessment → theme → download
@@ -203,11 +204,14 @@ export default function OnboardingPage() {
             <Brain className="h-7 w-7" style={{ color: 'var(--lp-amber)' }} />
             <span className="text-xl font-bold" style={{ color: 'var(--lp-text)' }}>Vlastním tempem</span>
           </Link>
-          {step > 0 && (
-            <Badge variant="secondary" className="text-sm px-3 py-1">
-              Krok {step + 1} z {totalSteps}
-            </Badge>
-          )}
+          <div className="flex items-center gap-3">
+            {step > 0 && (
+              <Badge variant="secondary" className="text-sm px-3 py-1">
+                Krok {step + 1} z {totalSteps}
+              </Badge>
+            )}
+            {isPrototypeMode && <DemoSwitcher />}
+          </div>
         </div>
         {/* Progress bar */}
         <div className="h-1" style={{ backgroundColor: 'var(--lp-border)' }}>
@@ -221,11 +225,11 @@ export default function OnboardingPage() {
       {/* Spacer for fixed header */}
       <div className="h-[4.5rem]" />
 
-      <main className="max-w-3xl mx-auto px-4 py-8 flex-1">
+      <main className="max-w-5xl mx-auto px-4 py-8 flex-1">
 
         {/* Step 0: Role selection */}
         {stepName === 'role' && (
-          <div className="space-y-6">
+          <div className="space-y-6 max-w-4xl mx-auto">
             <div className="text-center">
               <h1 className="text-3xl font-bold">Kdo jste?</h1>
               <p className="text-muted-foreground mt-2">
@@ -233,7 +237,7 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-3">
               {roleOptions.map((opt) => (
                 <Card
                   key={opt.value}

@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { Brain, Shield } from 'lucide-react'
+import { isPrototypeMode } from '@/lib/prototype'
+import { DemoSwitcherStatic } from '@/components/demo/demo-switcher-static'
 
 export default function Home() {
   return (
@@ -24,19 +26,23 @@ export default function Home() {
               <Brain className="h-7 w-7" style={{ color: 'var(--lp-amber)' }} />
               <span className="text-xl font-bold" style={{ color: 'var(--lp-text)' }}>Vlastním tempem</span>
             </div>
-            <Link href="/login">
-              <button
-                className="px-5 py-2 text-sm font-semibold"
-                style={{
-                  backgroundColor: 'transparent',
-                  color: 'var(--lp-amber)',
-                  border: '2px solid var(--lp-amber)',
-                  borderRadius: '9999px',
-                }}
-              >
-                Přihlásit se
-              </button>
-            </Link>
+            {isPrototypeMode ? (
+              <DemoSwitcherStatic />
+            ) : (
+              <Link href="/login">
+                <button
+                  className="px-5 py-2 text-sm font-semibold"
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: 'var(--lp-amber)',
+                    border: '2px solid var(--lp-amber)',
+                    borderRadius: '9999px',
+                  }}
+                >
+                  Přihlásit se
+                </button>
+              </Link>
+            )}
           </div>
         </header>
       </div>
