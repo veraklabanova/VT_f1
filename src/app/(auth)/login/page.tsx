@@ -24,9 +24,9 @@ export default function LoginPage() {
   // In prototype mode, redirect to dashboard immediately
   useEffect(() => {
     if (isPrototypeMode) {
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
     }
-  }, [router])
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
