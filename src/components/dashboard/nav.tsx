@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Brain, Home, ClipboardList, Palette, BookOpen, CreditCard, Settings, LogOut } from 'lucide-react'
+import { Brain, Home, ClipboardList, Palette, BookOpen, CreditCard, Settings, LogOut, Shield } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { DemoSwitcher } from '@/components/demo/demo-switcher'
@@ -36,14 +36,21 @@ export function DashboardNav({ profile, email, isDemo = false }: DashboardNavPro
     router.refresh()
   }
 
+  const isAdmin = profile.role === 'admin'
+
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Přehled' },
-    ...(!isOrg
+    ...(!isOrg && !isAdmin
       ? [{ href: '/assessment', icon: ClipboardList, label: 'Dotazník' }]
       : []),
-    { href: '/themes', icon: Palette, label: 'Témata' },
-    { href: '/workbooks', icon: BookOpen, label: 'Sešity' },
-    { href: '/subscription', icon: CreditCard, label: 'Předplatné' },
+    ...(!isAdmin ? [
+      { href: '/themes', icon: Palette, label: 'Témata' },
+      { href: '/workbooks', icon: BookOpen, label: 'Sešity' },
+      { href: '/subscription', icon: CreditCard, label: 'Předplatné' },
+    ] : []),
+    ...(isAdmin ? [
+      { href: '/admin/dashboard', icon: Shield, label: 'Administrace' },
+    ] : []),
   ]
 
   return (

@@ -1,12 +1,11 @@
-import { redirect } from 'next/navigation'
+'use client'
+
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import { isPrototypeMode } from '@/lib/prototype'
+import { useDemoMode } from '@/lib/demo/demo-context'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ClipboardList, Palette, BookOpen, ArrowRight } from 'lucide-react'
-import type { Profile } from '@/types'
+import { ClipboardList, Palette, BookOpen, ArrowRight, Shield } from 'lucide-react'
 
 const severityLabels: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
   lehka: { label: 'Lehká', variant: 'default' },
@@ -14,47 +13,49 @@ const severityLabels: Record<string, { label: string; variant: 'default' | 'seco
   tezsi: { label: 'Těžší', variant: 'destructive' },
 }
 
-export default async function DashboardPage() {
-  // In prototype mode, render client-side demo dashboard
-  if (isPrototypeMode) {
-    const { DemoDashboardPage } = await import('@/components/demo/demo-dashboard-page')
-    return <DemoDashboardPage />
-  }
-
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-
-  if (!profile) redirect('/login')
-
-  const p = profile as Profile
+export function DemoDashboardPage() {
+  const { currentAccount } = useDemoMode()
+  const p = currentAccount.profile
   const isOrg = p.role === 'organizace'
   const isAdmin = p.role === 'admin'
   const needsAssessment = !isOrg && !isAdmin && !p.severity_level
-
-  const { count: workbookCount } = await supabase
-    .from('workbooks')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', user.id) as { count: number | null }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">
-          {isOrg ? `Vítejte, ${p.organization_name}` : 'Vítejte'}
+          {isOrg ? `Vítejte, ${p.organization_name}` : `Vítejte, ${currentAccount.name}`}
         </h1>
         <p className="text-muted-foreground mt-1">
           {isOrg
             ? 'Vyberte téma a stáhněte pracovní sešity pro vaše klienty.'
-            : 'Váš osobní prostor pro kognitivní trénink.'}
+            : isAdmin
+              ? 'Správa aplikace a obsahu.'
+              : 'Váš osobní prostor pro kognitivní trénink.'}
         </p>
       </div>
+
+      {/* Admin: link to admin section */}
+      {isAdmin && (
+        <Card className="border-2" style={{ borderColor: 'var(--lp-amber)', backgroundColor: 'var(--lp-amber-light)' }}>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Shield className="h-5 w-5" style={{ color: 'var(--lp-amber)' }} />
+              Administrace
+            </CardTitle>
+            <CardDescription>
+              Spravujte cvičení, témata a obsah aplikace.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/admin/dashboard">
+              <Button className="gap-2">
+                Přejít do administrace <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Status cards */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -86,7 +87,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Stažené sešity</CardDescription>
-            <CardTitle className="text-2xl">{workbookCount || 0}</CardTitle>
+            <CardTitle className="text-2xl">0</CardTitle>
           </CardHeader>
           <CardContent>
             <Link href="/workbooks">
@@ -101,11 +102,7 @@ export default async function DashboardPage() {
           <CardHeader className="pb-2">
             <CardDescription>Předplatné</CardDescription>
             <CardTitle className="text-lg">
-              {p.free_workbook_used ? (
-                <Badge variant="secondary">Potřeba předplatné</Badge>
-              ) : (
-                <Badge>Zdarma k dispozici</Badge>
-              )}
+              <Badge>Zdarma k dispozici</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -119,39 +116,41 @@ export default async function DashboardPage() {
       </div>
 
       {/* Next steps */}
-      {needsAssessment ? (
-        <Card className="border-amber-200 bg-amber-50">
-          <CardHeader>
-            <CardTitle className="text-lg">Další krok: Vyplňte dotazník</CardTitle>
-            <CardDescription>
-              Před stažením prvního sešitu je potřeba vyplnit krátký dotazník,
-              který pomůže určit správnou úroveň obtížnosti.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/assessment">
-              <Button className="gap-2">
-                Vyplnit dotazník <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Vytvořit nový sešit</CardTitle>
-            <CardDescription>
-              Vyberte téma a stáhněte si pracovní sešit.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/themes">
-              <Button className="gap-2">
-                <Palette className="h-4 w-4" /> Vybrat téma
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+      {!isAdmin && (
+        needsAssessment ? (
+          <Card className="border-amber-200 bg-amber-50">
+            <CardHeader>
+              <CardTitle className="text-lg">Další krok: Vyplňte dotazník</CardTitle>
+              <CardDescription>
+                Před stažením prvního sešitu je potřeba vyplnit krátký dotazník,
+                který pomůže určit správnou úroveň obtížnosti.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/assessment">
+                <Button className="gap-2">
+                  Vyplnit dotazník <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Vytvořit nový sešit</CardTitle>
+              <CardDescription>
+                Vyberte téma a stáhněte si pracovní sešit.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/themes">
+                <Button className="gap-2">
+                  <Palette className="h-4 w-4" /> Vybrat téma
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )
       )}
     </div>
   )

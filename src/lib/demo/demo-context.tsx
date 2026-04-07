@@ -31,11 +31,16 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     if (!account) return
     setCurrentAccount(account)
     localStorage.setItem('vt_demo_account', id)
-    // Navigate to appropriate page after switch
-    if (account.profile.role === 'admin') {
-      router.push('/admin/dashboard')
-    } else {
+    // Navigate based on role
+    const role = account.profile.role
+    if (role === 'admin') {
       router.push('/dashboard')
+    } else if (role === 'organizace') {
+      router.push('/onboarding?role=organizace')
+    } else if (role === 'osoba_s_postizenim') {
+      router.push('/onboarding?role=osoba_s_postizenim')
+    } else {
+      router.push('/onboarding?role=pecujici')
     }
   }, [router])
 
