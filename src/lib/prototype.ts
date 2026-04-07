@@ -1,5 +1,6 @@
 /**
  * Prototype mode flag.
- * When true, auth is bypassed and demo accounts are used instead.
+ * Hardcoded to true on the prototype branch.
+ * On master branch this file doesn't exist (or returns false).
  */
-export const isPrototypeMode = process.env.NEXT_PUBLIC_PROTOTYPE_MODE === 'true'
+export const isPrototypeMode = true
