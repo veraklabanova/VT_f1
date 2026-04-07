@@ -34,7 +34,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     // Full page reload to re-render server components with correct demo profile
     const role = account.profile.role
     if (role === 'admin') {
-      window.location.href = '/dashboard'
+      window.location.href = '/admin/dashboard'
     } else if (role === 'organizace') {
       window.location.href = '/onboarding?role=organizace'
     } else if (role === 'osoba_s_postizenim') {
